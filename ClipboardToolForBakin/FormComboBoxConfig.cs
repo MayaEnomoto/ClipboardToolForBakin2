@@ -51,8 +51,15 @@ namespace ClipboardToolForBakin2
                 };
                 valueBox.KeyPress += (sender, e) =>
                 {
-                    e.Handled = !(char.IsDigit(e.KeyChar) || (e.KeyChar >= 'a' && e.KeyChar <= 'f') ||
-                                  (e.KeyChar >= 'A' && e.KeyChar <= 'F') || e.KeyChar == (char)Keys.Back);
+                    if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+                    {
+                        e.Handled = false;
+                    }
+                    else
+                    {
+                        e.Handled = !(char.IsDigit(e.KeyChar) || (e.KeyChar >= 'a' && e.KeyChar <= 'f') ||
+                                      (e.KeyChar >= 'A' && e.KeyChar <= 'F') || e.KeyChar == (char)Keys.Back);
+                    }
                 };
                 valueBox.TextChanged += (sender, e) =>
                 {
