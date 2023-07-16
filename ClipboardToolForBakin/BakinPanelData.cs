@@ -1,12 +1,37 @@
 ﻿using System.Text;
-using System.Windows.Forms;
 
 namespace ClipboardToolForBakin
 {
-    internal class BakinPanelData
+    public class BakinPanelData
     {
         public class RowData
         {
+            public RowData()
+            {
+                this.Tag = "Talk";
+                this.Text = "";
+                this.NPL = "";
+                this.NPC = "";
+                this.NPR = "";
+                this.blspd = 0;
+                this.blrate = 0;
+                this.lipspd = 0f;
+                this.Cast1 = "";
+                this.ActCast1 = "";
+                this.Cast2 = "";
+                this.ActCast2 = "";
+                this.TalkCast = "1";
+                this.MirrorCast1 = false;
+                this.MirrorCast2 = false;
+                this.Billboard1 = false;
+                this.Billboard2 = false;
+                this.WindowVisible = false;
+                this.WindowPosition = "Down";
+                this.SpeechBubble = "";
+                this.UseMapLight = false;
+                this.Memo = "";
+            }
+
             public string Tag { get; set; }
             public string Text { get; set; }
             public string NPL { get; set; }
@@ -24,6 +49,7 @@ namespace ClipboardToolForBakin
             public bool MirrorCast2 { get; set; }
             public bool Billboard1 { get; set; }
             public bool Billboard2 { get; set; }
+            public bool WindowVisible { get; set; }
             public string WindowPosition { get; set; }
             public string SpeechBubble { get; set; }
             public bool UseMapLight { get; set; }
@@ -242,7 +268,14 @@ namespace ClipboardToolForBakin
                                     writer.Write(0x00000002);
                                     break;
                             }
-                            writer.Write(0x00000000);
+                            if (rowData.WindowVisible == true)
+                            {
+                                writer.Write(0x00000001);
+                            }
+                            else
+                            {
+                                writer.Write(0x00000000);
+                            }
                             break;
 
                         case "Notes":
@@ -287,14 +320,19 @@ namespace ClipboardToolForBakin
 
                     for (int i = 0; i < count; i++)
                     {
+                        if (reader.BaseStream.Position >= reader.BaseStream.Length)
+                        {
+                            break;
+                        }
+
                         BakinPanelData.RowData rowData = new BakinPanelData.RowData();
                         uint tagId = reader.ReadUInt32();
 
                         switch (tagId)
                         {
-                            case 0x0000002b:
+                            case 0x0000002B:
                             case 0x0000001D:
-                                if (tagId == 0x0000002b)
+                                if (tagId == 0x0000002B)
                                 {
                                     rowData.Tag = "Talk";
                                     reader.ReadUInt32();
@@ -325,7 +363,6 @@ namespace ClipboardToolForBakin
                                         textLength = textLength + 128 * (temp - 1);
                                     }
                                     rowData.Text = Encoding.UTF8.GetString(reader.ReadBytes(textLength));
-
                                 }
 
                                 windowPositionId = reader.ReadUInt32();
@@ -351,9 +388,18 @@ namespace ClipboardToolForBakin
                                     string hexData = BinaryToFormattedHexString(combinedBytes);
                                     rowData.SpeechBubble = hexData;
                                 }
-                                reader.ReadUInt32();
 
-                                if (tagId == 0x0000002b)
+                                uint windowVisible = reader.ReadUInt32();
+                                if (windowVisible == 0x00000001)
+                                {
+                                    rowData.WindowVisible = true;
+                                }
+                                else
+                                {
+                                    rowData.WindowVisible = false;
+                                }
+
+                                if (tagId == 0x0000002B)
                                 {
                                     byte[] cast1Bytes = reader.ReadBytes(16);
                                     string cast1 = Encoding.ASCII.GetString(cast1Bytes).TrimEnd('\0');
@@ -416,9 +462,28 @@ namespace ClipboardToolForBakin
 
                             default:
                                 // not for support
-                                return data;
+                                //return data;
+                                // This is only a temporary process. Cases have been confirmed where it does not work.
+                                // Read bytes until we encounter a pattern that begins with 0x000000XX
+                                List<byte> buffer = new List<byte>();
+                                byte[] expectedPattern2B = new byte[] { 0x2B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                                byte[] expectedPattern1D = new byte[] { 0x1D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                                byte[] expectedPattern7E = new byte[] { 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                                while (reader.BaseStream.Position < reader.BaseStream.Length)
+                                {
+                                    buffer.Add(reader.ReadByte());
+                                    if (buffer.Count >= 8)
+                                    {
+                                        byte[] lastEightBytes = buffer.Skip(buffer.Count - 8).Take(8).ToArray();
+                                        if (lastEightBytes.SequenceEqual(expectedPattern2B) || lastEightBytes.SequenceEqual(expectedPattern1D) || lastEightBytes.SequenceEqual(expectedPattern7E))
+                                        {
+                                            reader.BaseStream.Position -= 8;
+                                            break;
+                                        }
+                                    }
+                                }
+                                continue;
                         }
-
                         data.Add(rowData);
                     }
                 }

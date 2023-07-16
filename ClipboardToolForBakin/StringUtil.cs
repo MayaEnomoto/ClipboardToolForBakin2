@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace ClipboardToolForBakin2
 {
@@ -96,9 +94,7 @@ namespace ClipboardToolForBakin2
             {
                 output = $"\\NPL[{data.NPL}]" + output;
             }
-
             return output;
         }
-
     }
 }

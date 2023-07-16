@@ -1,12 +1,11 @@
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using ClipboardToolForBakin2;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
+using static ClipboardToolForBakin.BakinPanelData;
 using static ClipboardToolForBakin2.StringUtil;
 
 namespace ClipboardToolForBakin
@@ -15,13 +14,13 @@ namespace ClipboardToolForBakin
     {
         private BindingSource _bindingSource;
         private BindingList<BakinPanelData.RowData> _dataList;
-
         private Rectangle dragBox;
         private int rowIndexFromMouseDown;
         private int rowIndexOfItemUnderMouseToDrop;
-
         private string lastClipboardText = string.Empty;
         private System.Windows.Forms.Timer clipboardCheckTimer;
+        private FormPreviewEditor _FormPreviewEditor = null;
+        private List<ResourceItem> _comboBoxItems = new List<ResourceItem>();
 
         public MainForm()
         {
@@ -36,11 +35,16 @@ namespace ClipboardToolForBakin
             }
 
             lastClipboardText = Clipboard.GetText();
-            CopyFromClipboardButton.Enabled = Clipboard.ContainsData("Yukar2ScriptCommands");
+            buttonPasteFromClipboard.Enabled = Clipboard.ContainsData("Yukar2ScriptCommands");
             clipboardCheckTimer = new System.Windows.Forms.Timer();
             clipboardCheckTimer.Interval = 500;
             clipboardCheckTimer.Tick += CheckClipboard;
             clipboardCheckTimer.Start();
+            buttonPreviewEditor.Enabled = false;
+            buttonDeleteRows.Enabled = false;
+            buttonCopyToClipboard.Enabled = false;
+
+            FormComboBoxConfig.InitComboBoxItems(_comboBoxItems);
         }
 
         private void InitializeDataGrid()
@@ -63,7 +67,7 @@ namespace ClipboardToolForBakin
                 DataSource = new string[] { "Talk", "Message", "Notes" },
                 DataPropertyName = "Tag",
                 ValueType = typeof(string),
-                DefaultCellStyle = new DataGridViewCellStyle { NullValue = "Notes" }
+                DefaultCellStyle = new DataGridViewCellStyle { NullValue = "Talk" }
             };
             int columnIndex = dataGridView.Columns["Tag"].Index;
             dataGridView.Columns.Remove("Tag");
@@ -130,6 +134,18 @@ namespace ClipboardToolForBakin
             dataGridView.Columns.Remove("Billboard2");
             dataGridView.Columns.Insert(columnIndex, billboard2Column);
 
+            var windowVisibletColumn = new DataGridViewCheckBoxColumn
+            {
+                Name = "WindowVisible",
+                HeaderText = "WindowVisible",
+                DataPropertyName = "WindowVisible",
+                ValueType = typeof(bool),
+                DefaultCellStyle = new DataGridViewCellStyle { NullValue = false }
+            };
+            columnIndex = dataGridView.Columns["WindowVisible"].Index;
+            dataGridView.Columns.Remove("WindowVisible");
+            dataGridView.Columns.Insert(columnIndex, windowVisibletColumn);
+
             var windowPositionColumn = new DataGridViewComboBoxColumn
             {
                 Name = "WindowPosition",
@@ -161,10 +177,10 @@ namespace ClipboardToolForBakin
             public CsvRowDataMap()
             {
                 Map(m => m.Tag).Name("Tag").TypeConverter<TagConverter>().Optional().Default("Talk");
-                Map(m => m.Text).Name("text").Optional().Default("");
-                Map(m => m.NPL).Name("NPL").Optional().Default("");
-                Map(m => m.NPC).Name("NPC").Optional().Default("");
-                Map(m => m.NPR).Name("NPR").Optional().Default("");
+                Map(m => m.Text).Name("text").Optional().Default(string.Empty);
+                Map(m => m.NPL).Name("NPL").Optional().Default(string.Empty);
+                Map(m => m.NPC).Name("NPC").Optional().Default(string.Empty);
+                Map(m => m.NPR).Name("NPR").Optional().Default(string.Empty);
                 Map(m => m.blspd).Name("blspd").Optional().Default("0");
                 Map(m => m.blrate).Name("blrate").Optional().Default("0");
                 Map(m => m.lipspd).Name("lipspd").Optional().Default("0.0");
@@ -177,10 +193,11 @@ namespace ClipboardToolForBakin
                 Map(m => m.MirrorCast2).Name("MirrorCast2").TypeConverter<BoolToStringConverter>().Optional().Default("off");
                 Map(m => m.Billboard1).Name("Billboard1").TypeConverter<BoolToStringConverter>().Optional().Default("off");
                 Map(m => m.Billboard2).Name("Billboard2").TypeConverter<BoolToStringConverter>().Optional().Default("off");
+                Map(m => m.WindowVisible).Name("WindowVisible").TypeConverter<BoolToStringConverter>().Optional().Default("off");
                 Map(m => m.WindowPosition).Name("WindowPosition").Optional().Default("Down");
                 Map(m => m.SpeechBubble).Name("SpeechBubble").TypeConverter<CastValueConverter>().Optional().Default("00000000-00000000-00000000-00000000");
                 Map(m => m.UseMapLight).Name("UseMapLight").TypeConverter<BoolToStringConverter>().Optional().Default("off");
-                Map(m => m.Memo).Name("Memo").Optional().Default("");
+                Map(m => m.Memo).Name("Memo").Optional().Default(string.Empty);
             }
         }
 
@@ -273,7 +290,6 @@ namespace ClipboardToolForBakin
                         record.Text = record.Text.Replace("\r\n", "\\n").Replace("\r", "\\n").Replace("\n", "\\n");
                         record.Text = record.Text.Replace(tempReplacement, "\\n");
                     }
-                    record.SpeechBubble = "Reserved";
                 }
                 _dataList = new BindingList<BakinPanelData.RowData>(records);
                 _bindingSource.DataSource = _dataList;
@@ -317,7 +333,7 @@ namespace ClipboardToolForBakin
             }
         }
 
-        private void CopyToClipboardButton_Click(object sender, EventArgs e)
+        private void buttonCopyToClipboard_Click(object sender, EventArgs e)
         {
             var selectedRowCount = dataGridView.SelectedRows.Count;
             if (selectedRowCount >= 1)
@@ -330,10 +346,10 @@ namespace ClipboardToolForBakin
 
                     StringData selectedData = new StringData
                     {
-                        NPL = selectedRow.Cells["NPL"].Value?.ToString() ?? "",
-                        NPC = selectedRow.Cells["NPC"].Value?.ToString() ?? "",
-                        NPR = selectedRow.Cells["NPR"].Value?.ToString() ?? "",
-                        text = selectedRow.Cells["Text"].Value?.ToString() ?? ""
+                        NPL = selectedRow.Cells["NPL"].Value?.ToString() ?? string.Empty,
+                        NPC = selectedRow.Cells["NPC"].Value?.ToString() ?? string.Empty,
+                        NPR = selectedRow.Cells["NPR"].Value?.ToString() ?? string.Empty,
+                        text = selectedRow.Cells["Text"].Value?.ToString() ?? string.Empty
                     };
 
                     int blspd;
@@ -353,24 +369,36 @@ namespace ClipboardToolForBakin
                     {
                         selectedData.Lipspd = lipspd;
                     }
-                    string combinedText = CombineString(selectedData);
+
+                    string combinedText = selectedRow.Cells["Text"].Value?.ToString() ?? string.Empty;
+                    string cellValue = selectedRow.Cells["Tag"].Value?.ToString() ?? string.Empty;
+                    if (cellValue == "Talk" || cellValue == "Memo")
+                    {
+                        combinedText = CombineString(selectedData);
+                    }
+                    else
+                    {
+                        ;
+                    }
 
                     var rowData = new BakinPanelData.RowData
                     {
-                        Tag = selectedRow.Cells["Tag"].Value?.ToString() ?? "",
-                        //Text = selectedRow.Cells["Text"].Value?.ToString() ?? "",
+                        //Tag = selectedRow.Cells["Tag"].Value?.ToString() ?? string.Empty,
+                        //Text = selectedRow.Cells["Text"].Value?.ToString() ?? string.Empty,
+                        Tag = cellValue,
                         Text = combinedText,
-                        Cast1 = selectedRow.Cells["Cast1"].Value?.ToString() ?? "",
-                        ActCast1 = selectedRow.Cells["ActCast1"].Value?.ToString() ?? "",
-                        Cast2 = selectedRow.Cells["Cast2"].Value?.ToString() ?? "",
-                        ActCast2 = selectedRow.Cells["ActCast2"].Value?.ToString() ?? "",
-                        TalkCast = selectedRow.Cells["TalkCast"].Value?.ToString() ?? "",
+                        Cast1 = selectedRow.Cells["Cast1"].Value?.ToString() ?? string.Empty,
+                        ActCast1 = selectedRow.Cells["ActCast1"].Value?.ToString() ?? string.Empty,
+                        Cast2 = selectedRow.Cells["Cast2"].Value?.ToString() ?? string.Empty,
+                        ActCast2 = selectedRow.Cells["ActCast2"].Value?.ToString() ?? string.Empty,
+                        TalkCast = selectedRow.Cells["TalkCast"].Value?.ToString() ?? string.Empty,
                         MirrorCast1 = (bool)(selectedRow.Cells["MirrorCast1"].Value ?? false),
                         MirrorCast2 = (bool)(selectedRow.Cells["MirrorCast2"].Value ?? false),
                         Billboard1 = (bool)(selectedRow.Cells["Billboard1"].Value ?? false),
                         Billboard2 = (bool)(selectedRow.Cells["Billboard2"].Value ?? false),
-                        WindowPosition = selectedRow.Cells["WindowPosition"].Value?.ToString() ?? "",
-                        SpeechBubble = selectedRow.Cells["SpeechBubble"].Value?.ToString() ?? "",
+                        WindowVisible = (bool)(selectedRow.Cells["WindowVisible"].Value ?? false),
+                        WindowPosition = selectedRow.Cells["WindowPosition"].Value?.ToString() ?? string.Empty,
+                        SpeechBubble = selectedRow.Cells["SpeechBubble"].Value?.ToString() ?? string.Empty,
                         UseMapLight = (bool)(selectedRow.Cells["UseMapLight"].Value ?? false),
                     };
                     selectedRows.Add(rowData);
@@ -378,22 +406,6 @@ namespace ClipboardToolForBakin
                 BakinPanelData.SetClipBoard(selectedRows);
             }
         }
-
-        private void buttonViewChange_Click(object sender, EventArgs e)
-        {
-            ColumnSelectorForm columnSelectorForm = new ColumnSelectorForm(dataGridView.Columns.Cast<DataGridViewColumn>());
-            if (columnSelectorForm.ShowDialog() == DialogResult.OK)
-            {
-                foreach (DataGridViewColumn column in dataGridView.Columns)
-                {
-                    if (columnSelectorForm.ColumnStates.TryGetValue(column.Name, out bool isVisible))
-                    {
-                        column.Visible = isVisible;
-                    }
-                }
-            }
-        }
-
 
         private void DataGridView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
@@ -515,59 +527,236 @@ namespace ClipboardToolForBakin
             }
         }
 
-        private void AddRowButton_Click(object sender, EventArgs e)
+        private void dataGridView_SelectionChanged(object sender, EventArgs e)
         {
-            BakinPanelData.RowData newRowData = new BakinPanelData.RowData();
-            _bindingSource.Add(newRowData);
-            dataGridView.ClearSelection();
-            dataGridView.Rows[dataGridView.Rows.Count - 1].Selected = true;
-            dataGridView.CurrentCell = dataGridView.Rows[dataGridView.Rows.Count - 1].Cells[0];
+            buttonCopyToClipboard.Enabled = dataGridView.SelectedRows.Count > 0;
+            buttonDeleteRows.Enabled = dataGridView.SelectedRows.Count > 0;
+            if (dataGridView.SelectedRows.Count > 0 || dataGridView.SelectedCells.Count > 0)
+            {
+                buttonPreviewEditor.Enabled = true;
+            }
+            else
+            {
+                buttonPreviewEditor.Enabled = false;
+            }
         }
 
-        private void deleteButton_Click(object sender, EventArgs e)
+        private void OpenFormBWithSelectedRowData()
         {
-            var rowsToDelete = new List<DataGridViewRow>();
-            foreach (DataGridViewRow row in dataGridView.SelectedRows)
+            DataGridViewRow selectedRow = null;
+
+            if (dataGridView.SelectedRows.Count >= 1)
             {
-                rowsToDelete.Add(row);
+                selectedRow = dataGridView.SelectedRows[0];
             }
-            foreach (DataGridViewRow row in rowsToDelete)
+            else if (dataGridView.SelectedCells.Count >= 1)
             {
-                if (row != null && row.Index < _bindingSource.Count)
+                selectedRow = dataGridView.SelectedCells[0].OwningRow;
+            }
+
+            if (selectedRow != null)
+            {
+                dataGridView.ClearSelection();
+                selectedRow.Selected = true;
+
+                var rowData = new BakinPanelData.RowData
                 {
-                    _bindingSource.RemoveAt(row.Index);
+                    Tag = selectedRow.Cells["Tag"].Value?.ToString() ?? string.Empty,
+                    Text = selectedRow.Cells["Text"].Value?.ToString() ?? string.Empty,
+                    NPL = selectedRow.Cells["NPL"].Value?.ToString() ?? string.Empty,
+                    NPC = selectedRow.Cells["NPC"].Value?.ToString() ?? string.Empty,
+                    NPR = selectedRow.Cells["NPR"].Value?.ToString() ?? string.Empty,
+                    blspd = int.TryParse(selectedRow.Cells["blspd"].Value?.ToString(), out var blspd) ? blspd : 0,
+                    blrate = int.TryParse(selectedRow.Cells["blrate"].Value?.ToString(), out var blrate) ? blrate : 0,
+                    lipspd = float.TryParse(selectedRow.Cells["lipspd"].Value?.ToString(), out var lipspd) ? lipspd : 0,
+                    Cast1 = selectedRow.Cells["Cast1"].Value?.ToString() ?? string.Empty,
+                    ActCast1 = selectedRow.Cells["ActCast1"].Value?.ToString() ?? string.Empty,
+                    Cast2 = selectedRow.Cells["Cast2"].Value?.ToString() ?? string.Empty,
+                    ActCast2 = selectedRow.Cells["ActCast2"].Value?.ToString() ?? string.Empty,
+                    TalkCast = selectedRow.Cells["TalkCast"].Value?.ToString() ?? string.Empty,
+                    MirrorCast1 = selectedRow.Cells["MirrorCast1"].Value as bool? ?? false,
+                    MirrorCast2 = selectedRow.Cells["MirrorCast2"].Value as bool? ?? false,
+                    Billboard1 = selectedRow.Cells["Billboard1"].Value as bool? ?? false,
+                    Billboard2 = selectedRow.Cells["Billboard2"].Value as bool? ?? false,
+                    WindowVisible = selectedRow.Cells["WindowVisible"].Value as bool? ?? false,
+                    WindowPosition = selectedRow.Cells["WindowPosition"].Value?.ToString() ?? string.Empty,
+                    SpeechBubble = selectedRow.Cells["SpeechBubble"].Value?.ToString() ?? string.Empty,
+                    UseMapLight = selectedRow.Cells["UseMapLight"].Value as bool? ?? false,
+                    Memo = selectedRow.Cells["Memo"].Value?.ToString() ?? string.Empty
+                };
+
+                if (_FormPreviewEditor == null || _FormPreviewEditor.IsDisposed)
+                {
+                    _FormPreviewEditor = new FormPreviewEditor(rowData, _comboBoxItems);
+                    _FormPreviewEditor.DataChanged += FormPreviewEditor_DataChanged;
+                    _FormPreviewEditor.RowChangeRequested += FormPreviewEditor_RowChangeRequested;
+                    _FormPreviewEditor.RowSwapRequested += FormPreviewEditor_RowSwapRequested;
+                    _FormPreviewEditor.RowAddRequested += FormPreviewEditor_RowAddRequested;
+                    _FormPreviewEditor.UpdateComboBoxItems(_comboBoxItems);
+                }
+                else
+                {
+                    _FormPreviewEditor.UpdateSelectedData(rowData);
+                    _FormPreviewEditor.UpdateComboBoxItems(_comboBoxItems);
+                    _FormPreviewEditor.PopulateFieldsWithData();
+                }
+
+                if (!_FormPreviewEditor.Visible)
+                {
+                    //_FormPreviewEditor.Show();
+                    _FormPreviewEditor.ShowDialog(this);
+                }
+                else
+                {
+                    _FormPreviewEditor.BringToFront();
                 }
             }
-            if (_bindingSource.Count > 0)
+        }
+
+        private void FormPreviewEditor_DataChanged(object sender, RowData e)
+        {
+            if (dataGridView.SelectedRows.Count > 0)
             {
-                dataGridView.CurrentCell = dataGridView.Rows[0].Cells[0];
+                var selectedRow = dataGridView.SelectedRows[0];
+
+                selectedRow.Cells["Tag"].Value = e.Tag;
+                selectedRow.Cells["Text"].Value = e.Text;
+                selectedRow.Cells["NPL"].Value = e.NPL;
+                selectedRow.Cells["NPC"].Value = e.NPC;
+                selectedRow.Cells["NPR"].Value = e.NPR;
+                selectedRow.Cells["blspd"].Value = e.blspd;
+                selectedRow.Cells["blrate"].Value = e.blrate;
+                selectedRow.Cells["lipspd"].Value = e.lipspd;
+                selectedRow.Cells["Cast1"].Value = e.Cast1;
+                selectedRow.Cells["ActCast1"].Value = e.ActCast1;
+                selectedRow.Cells["Cast2"].Value = e.Cast2;
+                selectedRow.Cells["ActCast2"].Value = e.ActCast2;
+                selectedRow.Cells["TalkCast"].Value = e.TalkCast;
+                selectedRow.Cells["MirrorCast1"].Value = e.MirrorCast1;
+                selectedRow.Cells["MirrorCast2"].Value = e.MirrorCast2;
+                selectedRow.Cells["Billboard1"].Value = e.Billboard1;
+                selectedRow.Cells["Billboard2"].Value = e.Billboard2;
+                selectedRow.Cells["WindowVisible"].Value = e.WindowVisible;
+                selectedRow.Cells["WindowPosition"].Value = e.WindowPosition;
+                selectedRow.Cells["SpeechBubble"].Value = e.SpeechBubble;
+                selectedRow.Cells["UseMapLight"].Value = e.UseMapLight;
+                selectedRow.Cells["Memo"].Value = e.Memo;
+
+                dataGridView.RefreshEdit();
             }
         }
 
-        private void PasteFromClipboardButton_Click(object sender, EventArgs e)
+        private void FormPreviewEditor_RowChangeRequested(object sender, PreviewRowEventArgs e)
         {
-            bool hasYukar2ScriptCommandsFormatData = Clipboard.ContainsData("Yukar2ScriptCommands");
-            if (!hasYukar2ScriptCommandsFormatData)
+            if (dataGridView.SelectedRows.Count >= 1)
             {
-                return;
+                int selectedIndex = dataGridView.SelectedRows[0].Index;
+                int newIndex = selectedIndex + e.Change;
+
+                if (newIndex >= 0 && newIndex < dataGridView.Rows.Count)
+                {
+                    dataGridView.ClearSelection();
+                    dataGridView.Rows[newIndex].Selected = true;
+
+                    int firstVisibleIndex = dataGridView.FirstDisplayedScrollingRowIndex;
+                    int visibleRowCount = dataGridView.DisplayedRowCount(false);
+                    if (newIndex < firstVisibleIndex || newIndex >= firstVisibleIndex + visibleRowCount)
+                    {
+                        dataGridView.FirstDisplayedScrollingRowIndex = newIndex;
+                    }
+
+                    OpenFormBWithSelectedRowData();
+                }
+            }
+        }
+
+        private void FormPreviewEditor_RowSwapRequested(object sender, SwapRowEventArgs e)
+        {
+            if (dataGridView.SelectedRows.Count >= 1)
+            {
+                int selectedIndex = dataGridView.SelectedRows[0].Index;
+                int newIndex = selectedIndex + e.Change;
+
+                if (newIndex >= 0 && newIndex < dataGridView.Rows.Count)
+                {
+                    var selectedData = _bindingSource[selectedIndex];
+                    var swapData = _bindingSource[newIndex];
+
+                    _bindingSource[selectedIndex] = swapData;
+                    _bindingSource[newIndex] = selectedData;
+
+                    dataGridView.ClearSelection();
+
+                    dataGridView.Rows[newIndex].Selected = true;
+
+                    int firstVisibleIndex = dataGridView.FirstDisplayedScrollingRowIndex;
+                    int visibleRowCount = dataGridView.DisplayedRowCount(false);
+                    if (newIndex < firstVisibleIndex || newIndex >= firstVisibleIndex + visibleRowCount)
+                    {
+                        dataGridView.FirstDisplayedScrollingRowIndex = newIndex;
+                    }
+
+                    OpenFormBWithSelectedRowData();
+                }
+            }
+        }
+
+        private void FormPreviewEditor_RowAddRequested(object sender, AddRowEventArgs e)
+        {
+            List<int> rowIndexes = new List<int>();
+
+            if (dataGridView.SelectedRows.Count > 0)
+            {
+                foreach (DataGridViewRow row in dataGridView.SelectedRows)
+                {
+                    rowIndexes.Add(row.Index);
+                }
+            }
+            else if (dataGridView.SelectedCells.Count > 0)
+            {
+                foreach (DataGridViewCell cell in dataGridView.SelectedCells)
+                {
+                    if (!rowIndexes.Contains(cell.RowIndex))
+                    {
+                        rowIndexes.Add(cell.RowIndex);
+                    }
+                }
             }
 
-            var data = BakinPanelData.GetClipBoardData().ToList();
-            data.Reverse();
-            foreach (var rowData in data)
+            rowIndexes.Sort();
+
+            int insertIndex = -1;
+            if (rowIndexes.Count > 0)
             {
-                StringData selectedData = ParseString(rowData.Text);
-                rowData.Text = selectedData.text;
-                rowData.NPL = selectedData.NPL;
-                rowData.NPC = selectedData.NPC;
-                rowData.NPR = selectedData.NPR;
-                rowData.blspd = selectedData.Blspd;
-                rowData.blrate = selectedData.Blrate;
-                rowData.lipspd = selectedData.Lipspd;
-                _bindingSource.Add(rowData);
+                insertIndex = rowIndexes[rowIndexes.Count - 1] + 1;
+                BakinPanelData.RowData newRowData = new BakinPanelData.RowData();
+                _bindingSource.Insert(insertIndex, newRowData);
+
+                dataGridView.ClearSelection();
+                dataGridView.Rows[insertIndex].Selected = true;
+                dataGridView.CurrentCell = dataGridView.Rows[insertIndex].Cells[0];
             }
-            _bindingSource.ResetBindings(false);
-            //InitializeDataGridSetting();
+            else
+            {
+                BakinPanelData.RowData newRowData = new BakinPanelData.RowData();
+                _bindingSource.Add(newRowData);
+                dataGridView.ClearSelection();
+                dataGridView.Rows[dataGridView.Rows.Count - 1].Selected = true;
+                dataGridView.CurrentCell = dataGridView.Rows[dataGridView.Rows.Count - 1].Cells[0];
+                insertIndex = dataGridView.Rows.Count - 1;
+            }
+
+            int firstVisibleIndex = dataGridView.FirstDisplayedScrollingRowIndex;
+            int visibleRowCount = dataGridView.DisplayedRowCount(false);
+            if (insertIndex < firstVisibleIndex || insertIndex >= firstVisibleIndex + visibleRowCount)
+            {
+                dataGridView.FirstDisplayedScrollingRowIndex = insertIndex;
+            }
+        }
+
+        private void CheckClipboard(object sender, EventArgs e)
+        {
+            buttonPasteFromClipboard.Enabled = Clipboard.ContainsData("Yukar2ScriptCommands");
         }
 
         private void dataGridView_MouseDown(object sender, MouseEventArgs e)
@@ -612,35 +801,147 @@ namespace ClipboardToolForBakin
                 _dataList.Insert(rowIndexOfItemUnderMouseToDrop, itemToMove);
             }
         }
-
-        private void copyFromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PasteFromClipboardButton_Click(sender, e);
-        }
-
-        private void copyToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CopyToClipboardButton_Click(sender, e);
-        }
-
-        private void deleteSelectedRowsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            deleteButton_Click(sender, e);
-        }
-
         private void contextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
             bool hasSelectedRows = dataGridView.SelectedRows.Count > 0;
             copyToClipboardToolStripMenuItem.Enabled = hasSelectedRows;
             deleteSelectedRowsToolStripMenuItem.Enabled = hasSelectedRows;
-
-            bool hasYukar2ScriptCommandsFormatData = Clipboard.ContainsData("Yukar2ScriptCommands");
-            copyFromClipboardToolStripMenuItem.Enabled = hasYukar2ScriptCommandsFormatData;
+            pasteFromClipboardToolStripMenuItem.Enabled = Clipboard.ContainsData("Yukar2ScriptCommands");
         }
 
         private void addNewRowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AddRowButton_Click(sender, e);
+            buttonInsertNewRowsBeforeSelection_Click(sender, e);
+        }
+
+        private void deleteSelectedRowsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            buttonDeleteRows_Click(sender, e);
+        }
+
+        private void copyToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            buttonCopyToClipboard_Click(sender, e);
+        }
+
+        private void pasteFromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            buttonPasteFromClipboard_Click(sender, e);
+        }
+
+        private void buttonAddRow_Click(object sender, EventArgs e)
+        {
+            BakinPanelData.RowData newRowData = new BakinPanelData.RowData();
+            _bindingSource.Add(newRowData);
+            dataGridView.ClearSelection();
+            dataGridView.Rows[dataGridView.Rows.Count - 1].Selected = true;
+            dataGridView.CurrentCell = dataGridView.Rows[dataGridView.Rows.Count - 1].Cells[0];
+        }
+
+        private void buttonInsertNewRowsBeforeSelection_Click(object sender, EventArgs e)
+        {
+            List<int> rowIndexes = new List<int>();
+
+            if (dataGridView.SelectedRows.Count > 0)
+            {
+                foreach (DataGridViewRow row in dataGridView.SelectedRows)
+                {
+                    rowIndexes.Add(row.Index);
+                }
+            }
+            else if (dataGridView.SelectedCells.Count > 0)
+            {
+                foreach (DataGridViewCell cell in dataGridView.SelectedCells)
+                {
+                    if (!rowIndexes.Contains(cell.RowIndex))
+                    {
+                        rowIndexes.Add(cell.RowIndex);
+                    }
+                }
+            }
+
+            rowIndexes.Sort();
+
+            if (rowIndexes.Count > 0)
+            {
+                int insertIndex = rowIndexes[0];
+                for (int i = 0; i < rowIndexes.Count; i++)
+                {
+                    BakinPanelData.RowData newRowData = new BakinPanelData.RowData();
+                    _bindingSource.Insert(insertIndex, newRowData);
+                }
+                dataGridView.ClearSelection();
+                for (int i = insertIndex; i < insertIndex + rowIndexes.Count; i++)
+                {
+                    dataGridView.Rows[i].Selected = true;
+                }
+                dataGridView.CurrentCell = dataGridView.Rows[insertIndex].Cells[0];
+            }
+            else
+            {
+                BakinPanelData.RowData newRowData = new BakinPanelData.RowData();
+                _bindingSource.Add(newRowData);
+                dataGridView.ClearSelection();
+                dataGridView.Rows[dataGridView.Rows.Count - 1].Selected = true;
+                dataGridView.CurrentCell = dataGridView.Rows[dataGridView.Rows.Count - 1].Cells[0];
+            }
+        }
+
+        private void buttonDeleteRows_Click(object sender, EventArgs e)
+        {
+            var rowsToDelete = new List<DataGridViewRow>();
+            foreach (DataGridViewRow row in dataGridView.SelectedRows)
+            {
+                rowsToDelete.Add(row);
+            }
+            foreach (DataGridViewRow row in rowsToDelete)
+            {
+                if (row != null && row.Index < _bindingSource.Count)
+                {
+                    _bindingSource.RemoveAt(row.Index);
+                }
+            }
+            if (_bindingSource.Count > 0)
+            {
+                dataGridView.CurrentCell = dataGridView.Rows[0].Cells[0];
+            }
+        }
+
+        private void buttonViewChange_Click(object sender, EventArgs e)
+        {
+            FormColumnSelector columnSelectorForm = new FormColumnSelector(dataGridView.Columns.Cast<DataGridViewColumn>());
+            if (columnSelectorForm.ShowDialog() == DialogResult.OK)
+            {
+                foreach (DataGridViewColumn column in dataGridView.Columns)
+                {
+                    if (columnSelectorForm.ColumnStates.TryGetValue(column.Name, out bool isVisible))
+                    {
+                        column.Visible = isVisible;
+                    }
+                }
+            }
+        }
+
+        private void buttonPasteFromClipboard_Click(object sender, EventArgs e)
+        {
+            if (Clipboard.ContainsData("Yukar2ScriptCommands"))
+            {
+                var data = BakinPanelData.GetClipBoardData().ToList();
+                data.Reverse();
+                foreach (var rowData in data)
+                {
+                    StringData selectedData = ParseString(rowData.Text);
+                    rowData.Text = selectedData.text;
+                    rowData.NPL = selectedData.NPL;
+                    rowData.NPC = selectedData.NPC;
+                    rowData.NPR = selectedData.NPR;
+                    rowData.blspd = selectedData.Blspd;
+                    rowData.blrate = selectedData.Blrate;
+                    rowData.lipspd = selectedData.Lipspd;
+                    _bindingSource.Add(rowData);
+                }
+                _bindingSource.ResetBindings(false);
+            }
         }
 
         private void btnClearDataGridView_Click(object sender, EventArgs e)
@@ -654,20 +955,35 @@ namespace ClipboardToolForBakin
             }
         }
 
-        private void CheckClipboard(object sender, EventArgs e)
+        private void buttonPreviewEditor_Click(object sender, EventArgs e)
         {
-            string clipboardText = Clipboard.GetText();
+            OpenFormBWithSelectedRowData();
+        }
 
-            if (clipboardText != lastClipboardText)
+        private void buttonUUIDDefinition_Click(object sender, EventArgs e)
+        {
+            FormComboBoxConfig configForm = new FormComboBoxConfig(_comboBoxItems);
+            if (configForm.ShowDialog() == DialogResult.OK)
             {
-                CopyFromClipboardButton.Enabled = Clipboard.ContainsData("Yukar2ScriptCommands");
-                lastClipboardText = clipboardText;
+                _comboBoxItems = configForm.GetItems();
             }
         }
 
-        private void dataGridView_SelectionChanged(object sender, EventArgs e)
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            CopyToClipboardButton.Enabled = dataGridView.SelectedRows.Count > 0;
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
+                };
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    WriteCsv(saveFileDialog.FileName);
+                }
+                e.SuppressKeyPress = true;
+            }
         }
     }
 }

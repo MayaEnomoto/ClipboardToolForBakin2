@@ -29,21 +29,25 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             dataGridView = new DataGridView();
             contextMenuStrip1 = new ContextMenuStrip(components);
-            addNewRowToolStripMenuItem = new ToolStripMenuItem();
+            InsertNewRowToolStripMenuItem = new ToolStripMenuItem();
             copyToClipboardToolStripMenuItem = new ToolStripMenuItem();
-            copyFromClipboardToolStripMenuItem = new ToolStripMenuItem();
+            pasteFromClipboardToolStripMenuItem = new ToolStripMenuItem();
             deleteSelectedRowsToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1 = new MenuStrip();
-            openToolStripMenuItem = new ToolStripMenuItem();
-            saveToolStripMenuItem = new ToolStripMenuItem();
+            fileToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItemFileOpen = new ToolStripMenuItem();
+            toolStripMenuItemFileSave = new ToolStripMenuItem();
             clearToolStripMenuItem = new ToolStripMenuItem();
-            CopyToClipboardButton = new Button();
-            CopyFromClipboardButton = new Button();
-            deleteButton = new Button();
-            addRowButton = new Button();
+            buttonCopyToClipboard = new Button();
+            buttonPasteFromClipboard = new Button();
+            buttonDeleteRows = new Button();
+            buttonInsertNewRow = new Button();
             buttonViewChange = new Button();
+            buttonPreviewEditor = new Button();
+            buttonUUIDdefinition = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
             contextMenuStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
@@ -59,7 +63,7 @@
             dataGridView.Location = new Point(12, 27);
             dataGridView.Name = "dataGridView";
             dataGridView.RowTemplate.Height = 25;
-            dataGridView.Size = new Size(620, 411);
+            dataGridView.Size = new Size(764, 462);
             dataGridView.TabIndex = 0;
             dataGridView.CellEndEdit += DataGridView_CellEndEdit;
             dataGridView.CellValidating += DataGridView_CellValidating;
@@ -71,61 +75,68 @@
             // 
             // contextMenuStrip1
             // 
-            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { addNewRowToolStripMenuItem, copyToClipboardToolStripMenuItem, copyFromClipboardToolStripMenuItem, deleteSelectedRowsToolStripMenuItem });
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { InsertNewRowToolStripMenuItem, copyToClipboardToolStripMenuItem, pasteFromClipboardToolStripMenuItem, deleteSelectedRowsToolStripMenuItem });
             contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(185, 114);
+            contextMenuStrip1.Size = new Size(191, 92);
             contextMenuStrip1.Opening += contextMenuStrip_Opening;
             // 
-            // addNewRowToolStripMenuItem
+            // InsertNewRowToolStripMenuItem
             // 
-            addNewRowToolStripMenuItem.Name = "addNewRowToolStripMenuItem";
-            addNewRowToolStripMenuItem.Size = new Size(184, 22);
-            addNewRowToolStripMenuItem.Text = "Add new Row";
-            addNewRowToolStripMenuItem.Click += addNewRowToolStripMenuItem_Click;
+            InsertNewRowToolStripMenuItem.Name = "InsertNewRowToolStripMenuItem";
+            InsertNewRowToolStripMenuItem.Size = new Size(190, 22);
+            InsertNewRowToolStripMenuItem.Text = "Insert new Row";
+            InsertNewRowToolStripMenuItem.Click += addNewRowToolStripMenuItem_Click;
             // 
             // copyToClipboardToolStripMenuItem
             // 
             copyToClipboardToolStripMenuItem.Name = "copyToClipboardToolStripMenuItem";
-            copyToClipboardToolStripMenuItem.Size = new Size(184, 22);
+            copyToClipboardToolStripMenuItem.Size = new Size(190, 22);
             copyToClipboardToolStripMenuItem.Text = "Copy to Clipboard";
             copyToClipboardToolStripMenuItem.Click += copyToClipboardToolStripMenuItem_Click;
             // 
-            // copyFromClipboardToolStripMenuItem
+            // pasteFromClipboardToolStripMenuItem
             // 
-            copyFromClipboardToolStripMenuItem.Name = "copyFromClipboardToolStripMenuItem";
-            copyFromClipboardToolStripMenuItem.Size = new Size(184, 22);
-            copyFromClipboardToolStripMenuItem.Text = "Copy from Clipboard";
-            copyFromClipboardToolStripMenuItem.Click += copyFromClipboardToolStripMenuItem_Click;
+            pasteFromClipboardToolStripMenuItem.Name = "pasteFromClipboardToolStripMenuItem";
+            pasteFromClipboardToolStripMenuItem.Size = new Size(190, 22);
+            pasteFromClipboardToolStripMenuItem.Text = "Pasete from Clipboard";
+            pasteFromClipboardToolStripMenuItem.Click += pasteFromClipboardToolStripMenuItem_Click;
             // 
             // deleteSelectedRowsToolStripMenuItem
             // 
             deleteSelectedRowsToolStripMenuItem.Name = "deleteSelectedRowsToolStripMenuItem";
-            deleteSelectedRowsToolStripMenuItem.Size = new Size(184, 22);
+            deleteSelectedRowsToolStripMenuItem.Size = new Size(190, 22);
             deleteSelectedRowsToolStripMenuItem.Text = "Delete selected Rows";
             deleteSelectedRowsToolStripMenuItem.Click += deleteSelectedRowsToolStripMenuItem_Click;
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, clearToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, clearToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(800, 24);
+            menuStrip1.Size = new Size(944, 24);
             menuStrip1.TabIndex = 1;
             menuStrip1.Text = "menuStrip1";
             // 
-            // openToolStripMenuItem
+            // fileToolStripMenuItem
             // 
-            openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(48, 20);
-            openToolStripMenuItem.Text = "Open";
-            openToolStripMenuItem.Click += OpenToolStripMenuItem_Click;
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuItemFileOpen, toolStripMenuItemFileSave });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new Size(37, 20);
+            fileToolStripMenuItem.Text = "File";
             // 
-            // saveToolStripMenuItem
+            // toolStripMenuItemFileOpen
             // 
-            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(43, 20);
-            saveToolStripMenuItem.Text = "Save";
-            saveToolStripMenuItem.Click += SaveToolStripMenuItem_Click;
+            toolStripMenuItemFileOpen.Name = "toolStripMenuItemFileOpen";
+            toolStripMenuItemFileOpen.Size = new Size(103, 22);
+            toolStripMenuItemFileOpen.Text = "Open";
+            toolStripMenuItemFileOpen.Click += OpenToolStripMenuItem_Click;
+            // 
+            // toolStripMenuItemFileSave
+            // 
+            toolStripMenuItemFileSave.Name = "toolStripMenuItemFileSave";
+            toolStripMenuItemFileSave.Size = new Size(103, 22);
+            toolStripMenuItemFileSave.Text = "Save";
+            toolStripMenuItemFileSave.Click += SaveToolStripMenuItem_Click;
             // 
             // clearToolStripMenuItem
             // 
@@ -134,56 +145,56 @@
             clearToolStripMenuItem.Text = "Clear";
             clearToolStripMenuItem.Click += btnClearDataGridView_Click;
             // 
-            // CopyToClipboardButton
+            // buttonCopyToClipboard
             // 
-            CopyToClipboardButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            CopyToClipboardButton.Enabled = false;
-            CopyToClipboardButton.Location = new Point(638, 332);
-            CopyToClipboardButton.Name = "CopyToClipboardButton";
-            CopyToClipboardButton.Size = new Size(150, 50);
-            CopyToClipboardButton.TabIndex = 2;
-            CopyToClipboardButton.Text = "Copy to Clipboard";
-            CopyToClipboardButton.UseVisualStyleBackColor = true;
-            CopyToClipboardButton.Click += CopyToClipboardButton_Click;
+            buttonCopyToClipboard.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonCopyToClipboard.Enabled = false;
+            buttonCopyToClipboard.Location = new Point(782, 383);
+            buttonCopyToClipboard.Name = "buttonCopyToClipboard";
+            buttonCopyToClipboard.Size = new Size(150, 50);
+            buttonCopyToClipboard.TabIndex = 2;
+            buttonCopyToClipboard.Text = "Copy to Clipboard";
+            buttonCopyToClipboard.UseVisualStyleBackColor = true;
+            buttonCopyToClipboard.Click += buttonCopyToClipboard_Click;
             // 
-            // CopyFromClipboardButton
+            // buttonPasteFromClipboard
             // 
-            CopyFromClipboardButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            CopyFromClipboardButton.Enabled = false;
-            CopyFromClipboardButton.Location = new Point(638, 388);
-            CopyFromClipboardButton.Name = "CopyFromClipboardButton";
-            CopyFromClipboardButton.Size = new Size(150, 50);
-            CopyFromClipboardButton.TabIndex = 4;
-            CopyFromClipboardButton.Text = "Copy from Clipboard";
-            CopyFromClipboardButton.UseVisualStyleBackColor = true;
-            CopyFromClipboardButton.Click += PasteFromClipboardButton_Click;
+            buttonPasteFromClipboard.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonPasteFromClipboard.Enabled = false;
+            buttonPasteFromClipboard.Location = new Point(782, 439);
+            buttonPasteFromClipboard.Name = "buttonPasteFromClipboard";
+            buttonPasteFromClipboard.Size = new Size(150, 50);
+            buttonPasteFromClipboard.TabIndex = 4;
+            buttonPasteFromClipboard.Text = "Paste from Clipboard";
+            buttonPasteFromClipboard.UseVisualStyleBackColor = true;
+            buttonPasteFromClipboard.Click += buttonPasteFromClipboard_Click;
             // 
-            // deleteButton
+            // buttonDeleteRows
             // 
-            deleteButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            deleteButton.Location = new Point(638, 139);
-            deleteButton.Name = "deleteButton";
-            deleteButton.Size = new Size(150, 50);
-            deleteButton.TabIndex = 5;
-            deleteButton.Text = "Delete selected Rows";
-            deleteButton.UseVisualStyleBackColor = true;
-            deleteButton.Click += deleteButton_Click;
+            buttonDeleteRows.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonDeleteRows.Location = new Point(782, 327);
+            buttonDeleteRows.Name = "buttonDeleteRows";
+            buttonDeleteRows.Size = new Size(150, 50);
+            buttonDeleteRows.TabIndex = 5;
+            buttonDeleteRows.Text = "Delete selected Rows";
+            buttonDeleteRows.UseVisualStyleBackColor = true;
+            buttonDeleteRows.Click += buttonDeleteRows_Click;
             // 
-            // addRowButton
+            // buttonInsertNewRow
             // 
-            addRowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            addRowButton.Location = new Point(638, 83);
-            addRowButton.Name = "addRowButton";
-            addRowButton.Size = new Size(150, 50);
-            addRowButton.TabIndex = 6;
-            addRowButton.Text = "Add new Row";
-            addRowButton.UseVisualStyleBackColor = true;
-            addRowButton.Click += AddRowButton_Click;
+            buttonInsertNewRow.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonInsertNewRow.Location = new Point(782, 271);
+            buttonInsertNewRow.Name = "buttonInsertNewRow";
+            buttonInsertNewRow.Size = new Size(150, 50);
+            buttonInsertNewRow.TabIndex = 6;
+            buttonInsertNewRow.Text = "Insert new Row";
+            buttonInsertNewRow.UseVisualStyleBackColor = true;
+            buttonInsertNewRow.Click += buttonInsertNewRowsBeforeSelection_Click;
             // 
             // buttonViewChange
             // 
             buttonViewChange.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonViewChange.Location = new Point(638, 27);
+            buttonViewChange.Location = new Point(782, 27);
             buttonViewChange.Name = "buttonViewChange";
             buttonViewChange.Size = new Size(150, 50);
             buttonViewChange.TabIndex = 7;
@@ -191,21 +202,48 @@
             buttonViewChange.UseVisualStyleBackColor = true;
             buttonViewChange.Click += buttonViewChange_Click;
             // 
+            // buttonPreviewEditor
+            // 
+            buttonPreviewEditor.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttonPreviewEditor.Location = new Point(782, 83);
+            buttonPreviewEditor.Name = "buttonPreviewEditor";
+            buttonPreviewEditor.Size = new Size(150, 50);
+            buttonPreviewEditor.TabIndex = 8;
+            buttonPreviewEditor.Text = "Preview Editor";
+            buttonPreviewEditor.UseVisualStyleBackColor = true;
+            buttonPreviewEditor.Click += buttonPreviewEditor_Click;
+            // 
+            // buttonUUIDdefinition
+            // 
+            buttonUUIDdefinition.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttonUUIDdefinition.Location = new Point(782, 139);
+            buttonUUIDdefinition.Name = "buttonUUIDdefinition";
+            buttonUUIDdefinition.Size = new Size(150, 50);
+            buttonUUIDdefinition.TabIndex = 9;
+            buttonUUIDdefinition.Text = "UUID definition";
+            buttonUUIDdefinition.UseVisualStyleBackColor = true;
+            buttonUUIDdefinition.Click += buttonUUIDDefinition_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(944, 501);
+            Controls.Add(buttonUUIDdefinition);
+            Controls.Add(buttonPreviewEditor);
             Controls.Add(buttonViewChange);
-            Controls.Add(addRowButton);
-            Controls.Add(deleteButton);
-            Controls.Add(CopyFromClipboardButton);
-            Controls.Add(CopyToClipboardButton);
+            Controls.Add(buttonInsertNewRow);
+            Controls.Add(buttonDeleteRows);
+            Controls.Add(buttonPasteFromClipboard);
+            Controls.Add(buttonCopyToClipboard);
             Controls.Add(dataGridView);
             Controls.Add(menuStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            KeyPreview = true;
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
-            Text = "Clipboard Tool for Bakin 2 v1.0.5";
+            Text = "Clipboard Tool for Bakin 2 v2.0.0";
+            KeyDown += MainForm_KeyDown;
             ((System.ComponentModel.ISupportInitialize)dataGridView).EndInit();
             contextMenuStrip1.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
@@ -218,18 +256,21 @@
 
         private DataGridView dataGridView;
         private MenuStrip menuStrip1;
-        private ToolStripMenuItem openToolStripMenuItem;
-        private ToolStripMenuItem saveToolStripMenuItem;
-        private Button CopyToClipboardButton;
-        private Button CopyFromClipboardButton;
-        private Button deleteButton;
+        private Button buttonCopyToClipboard;
+        private Button buttonPasteFromClipboard;
+        private Button buttonDeleteRows;
         private ContextMenuStrip contextMenuStrip1;
-        private ToolStripMenuItem copyFromClipboardToolStripMenuItem;
+        private ToolStripMenuItem pasteFromClipboardToolStripMenuItem;
         private ToolStripMenuItem copyToClipboardToolStripMenuItem;
         private ToolStripMenuItem deleteSelectedRowsToolStripMenuItem;
-        private Button addRowButton;
-        private ToolStripMenuItem addNewRowToolStripMenuItem;
+        private Button buttonInsertNewRow;
+        private ToolStripMenuItem InsertNewRowToolStripMenuItem;
         private ToolStripMenuItem clearToolStripMenuItem;
         private Button buttonViewChange;
+        private Button buttonPreviewEditor;
+        private Button buttonUUIDdefinition;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItemFileOpen;
+        private ToolStripMenuItem toolStripMenuItemFileSave;
     }
 }
