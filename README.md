@@ -1,6 +1,6 @@
 # ClipboardToolForBakin2
 
-[![サービス紹介動画](https://github.com/MayaEnomoto/ClipboardToolForBakin2/assets/2517436/1f14f7ca-2256-4c47-93d7-6490720d9a2c)](https://youtu.be/5aKI900iGVo?t=1336)
+[![](https://img.youtube.com/vi/shRh2ZDNV1A/0.jpg)](https://www.youtube.com/watch?v=shRh2ZDNV1A)
 
 This is a support tool for copying and pasting the Talk (conversation), Message, and Notes event panels of RPG Developer Bakin.  
 It is intended to be used for writing scenarios and then copying and pasting them into Bakin as a conversation panel.
