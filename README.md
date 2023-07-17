@@ -2,6 +2,8 @@
 
 [![](https://img.youtube.com/vi/shRh2ZDNV1A/0.jpg)](https://www.youtube.com/watch?v=shRh2ZDNV1A)
 
+![ShortcutKeys](https://github.com/MayaEnomoto/ClipboardToolForBakin2/assets/2517436/682ed8c4-5392-4fbd-8220-2d4589e941ce)
+
 [English Guide (youtube)](https://www.youtube.com/watch?v=8xlUcF1CxJU)
 
 This is a support tool for copying and pasting the Talk (conversation), Message, and Notes event panels of RPG Developer Bakin.  
