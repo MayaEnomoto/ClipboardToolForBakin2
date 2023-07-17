@@ -8,7 +8,7 @@ This is a support tool for copying and pasting the Talk (conversation), Message,
 It is intended to be used for writing scenarios and then copying and pasting them into Bakin as a conversation panel.
 
 The basic implementation is the same as ToolForBakin, but extended so that NPL, NPC, NPR, blspd, blrate, and lpspd can be set from the UI.
-Since the way of handling data is different and the implementation of preview functions, etc. is under consideration, we have separated them into separate repositories instead of branches.
+The recommended image file size is about 256*256 to 512*512 square.
 
 You can also clipboard from Bakin, but only the three types of event panels mentioned above can be copied.  
 We try to skip reading unsupported event panels as much as possible, but it is not perfect.
@@ -24,7 +24,7 @@ RPG Developer BakinのTalk(会話), Message(メッセージ), Notes(注釈)の�
 シナリオを書いてから会話パネルとして纏めてBakinにコピペしたりする使い方を想定しています。
 
 ToolForBakinと基本的な実装は同じですが、NPL,NPC,NPR,blspd,blrate,lpspdをUI上から設定できるように拡張しています。
-データの扱い方が異なり、プレビュー機能等の実装も検討している為、ブランチとせず別のリポジトリに分けています。
+Toolに設定する画像ファイルは、256*256～512*512程度の正方形画像が推奨です。
 
 Bakin側からクリップボードで取り込むこともできますが、前述の3種類のイベントパネル以外は取り込めません。  
 ※サポート外のイベントパネルはなるべく読み飛ばすように処理していますが、完全ではありません。
