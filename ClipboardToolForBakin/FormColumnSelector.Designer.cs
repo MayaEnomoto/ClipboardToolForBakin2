@@ -51,7 +51,7 @@
             ButtonConfirm.Location = new Point(462, 379);
             ButtonConfirm.Name = "ButtonConfirm";
             ButtonConfirm.Size = new Size(150, 50);
-            ButtonConfirm.TabIndex = 1;
+            ButtonConfirm.TabIndex = 4;
             ButtonConfirm.Text = "OK";
             ButtonConfirm.UseVisualStyleBackColor = true;
             ButtonConfirm.Click += ButtonConfirm_Click;
@@ -62,7 +62,7 @@
             ButtonMinimum.Location = new Point(12, 379);
             ButtonMinimum.Name = "ButtonMinimum";
             ButtonMinimum.Size = new Size(100, 50);
-            ButtonMinimum.TabIndex = 2;
+            ButtonMinimum.TabIndex = 1;
             ButtonMinimum.Text = "Minimum";
             ButtonMinimum.UseVisualStyleBackColor = true;
             ButtonMinimum.Click += ButtonMinimum_Click;
@@ -73,7 +73,7 @@
             buttonTalk.Location = new Point(118, 379);
             buttonTalk.Name = "buttonTalk";
             buttonTalk.Size = new Size(100, 50);
-            buttonTalk.TabIndex = 3;
+            buttonTalk.TabIndex = 2;
             buttonTalk.Text = "Talk";
             buttonTalk.UseVisualStyleBackColor = true;
             buttonTalk.Click += buttonTalkMode_Click;
@@ -84,12 +84,12 @@
             buttonAll.Location = new Point(224, 379);
             buttonAll.Name = "buttonAll";
             buttonAll.Size = new Size(100, 50);
-            buttonAll.TabIndex = 4;
+            buttonAll.TabIndex = 3;
             buttonAll.Text = "All";
             buttonAll.UseVisualStyleBackColor = true;
             buttonAll.Click += buttonAll_Click;
             // 
-            // ColumnSelectorForm
+            // FormColumnSelector
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -99,7 +99,7 @@
             Controls.Add(ButtonMinimum);
             Controls.Add(ButtonConfirm);
             Controls.Add(flowLayoutPanelViewChange);
-            Name = "ColumnSelectorForm";
+            Name = "FormColumnSelector";
             Text = "ColumnSelectorForm";
             ResumeLayout(false);
         }

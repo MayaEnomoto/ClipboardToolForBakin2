@@ -113,7 +113,7 @@
             buttonPreviousRow.Location = new Point(152, 449);
             buttonPreviousRow.Name = "buttonPreviousRow";
             buttonPreviousRow.Size = new Size(100, 40);
-            buttonPreviousRow.TabIndex = 0;
+            buttonPreviousRow.TabIndex = 27;
             buttonPreviousRow.Text = "<<Prev";
             buttonPreviousRow.UseVisualStyleBackColor = true;
             buttonPreviousRow.Click += buttonPreviousRow_Click;
@@ -124,7 +124,7 @@
             buttonNextRow.Location = new Point(364, 449);
             buttonNextRow.Name = "buttonNextRow";
             buttonNextRow.Size = new Size(100, 40);
-            buttonNextRow.TabIndex = 1;
+            buttonNextRow.TabIndex = 29;
             buttonNextRow.Text = "Next>>";
             buttonNextRow.UseVisualStyleBackColor = true;
             buttonNextRow.Click += buttonNextRow_Click;
@@ -135,7 +135,7 @@
             buttonApply.Location = new Point(470, 449);
             buttonApply.Name = "buttonApply";
             buttonApply.Size = new Size(100, 40);
-            buttonApply.TabIndex = 2;
+            buttonApply.TabIndex = 32;
             buttonApply.Text = "Apply";
             buttonApply.UseVisualStyleBackColor = true;
             buttonApply.Click += buttonApply_Click;
@@ -148,7 +148,7 @@
             comboBoxTagType.Location = new Point(576, 27);
             comboBoxTagType.Name = "comboBoxTagType";
             comboBoxTagType.Size = new Size(110, 23);
-            comboBoxTagType.TabIndex = 3;
+            comboBoxTagType.TabIndex = 0;
             comboBoxTagType.SelectedIndexChanged += comboBoxTagType_SelectedIndexChanged;
             // 
             // labelTagType
@@ -177,7 +177,7 @@
             textBoxNPL.Location = new Point(576, 71);
             textBoxNPL.Name = "textBoxNPL";
             textBoxNPL.Size = new Size(110, 23);
-            textBoxNPL.TabIndex = 6;
+            textBoxNPL.TabIndex = 1;
             // 
             // textBoxNPC
             // 
@@ -185,7 +185,7 @@
             textBoxNPC.Location = new Point(692, 72);
             textBoxNPC.Name = "textBoxNPC";
             textBoxNPC.Size = new Size(110, 23);
-            textBoxNPC.TabIndex = 7;
+            textBoxNPC.TabIndex = 2;
             // 
             // textBoxNPR
             // 
@@ -193,7 +193,7 @@
             textBoxNPR.Location = new Point(808, 72);
             textBoxNPR.Name = "textBoxNPR";
             textBoxNPR.Size = new Size(110, 23);
-            textBoxNPR.TabIndex = 8;
+            textBoxNPR.TabIndex = 3;
             // 
             // labelNPC
             // 
@@ -223,7 +223,7 @@
             textBoxText.Name = "textBoxText";
             textBoxText.ScrollBars = ScrollBars.Vertical;
             textBoxText.Size = new Size(356, 75);
-            textBoxText.TabIndex = 12;
+            textBoxText.TabIndex = 7;
             // 
             // labelText
             // 
@@ -271,7 +271,7 @@
             numericUpDownBlspd.Location = new Point(576, 116);
             numericUpDownBlspd.Name = "numericUpDownBlspd";
             numericUpDownBlspd.Size = new Size(110, 23);
-            numericUpDownBlspd.TabIndex = 16;
+            numericUpDownBlspd.TabIndex = 4;
             // 
             // numericUpDownBlrate
             // 
@@ -279,7 +279,7 @@
             numericUpDownBlrate.Location = new Point(692, 116);
             numericUpDownBlrate.Name = "numericUpDownBlrate";
             numericUpDownBlrate.Size = new Size(110, 23);
-            numericUpDownBlrate.TabIndex = 17;
+            numericUpDownBlrate.TabIndex = 5;
             // 
             // numericUpDownLipspd
             // 
@@ -288,7 +288,7 @@
             numericUpDownLipspd.Location = new Point(807, 116);
             numericUpDownLipspd.Name = "numericUpDownLipspd";
             numericUpDownLipspd.Size = new Size(110, 23);
-            numericUpDownLipspd.TabIndex = 18;
+            numericUpDownLipspd.TabIndex = 6;
             // 
             // labelMemo
             // 
@@ -308,7 +308,7 @@
             textBoxMemo.Name = "textBoxMemo";
             textBoxMemo.ScrollBars = ScrollBars.Vertical;
             textBoxMemo.Size = new Size(356, 50);
-            textBoxMemo.TabIndex = 20;
+            textBoxMemo.TabIndex = 22;
             // 
             // comboBoxCast1
             // 
@@ -317,7 +317,7 @@
             comboBoxCast1.Location = new Point(634, 256);
             comboBoxCast1.Name = "comboBoxCast1";
             comboBoxCast1.Size = new Size(115, 23);
-            comboBoxCast1.TabIndex = 21;
+            comboBoxCast1.TabIndex = 8;
             comboBoxCast1.SelectedIndexChanged += comboBoxCast1_SelectedIndexChanged_1;
             // 
             // labelCast1
@@ -336,7 +336,7 @@
             textBoxActCast1.Location = new Point(634, 285);
             textBoxActCast1.Name = "textBoxActCast1";
             textBoxActCast1.Size = new Size(115, 23);
-            textBoxActCast1.TabIndex = 24;
+            textBoxActCast1.TabIndex = 9;
             // 
             // textBoxActCast2
             // 
@@ -344,7 +344,7 @@
             textBoxActCast2.Location = new Point(817, 285);
             textBoxActCast2.Name = "textBoxActCast2";
             textBoxActCast2.Size = new Size(115, 23);
-            textBoxActCast2.TabIndex = 26;
+            textBoxActCast2.TabIndex = 11;
             // 
             // comboBoxCast2
             // 
@@ -353,7 +353,7 @@
             comboBoxCast2.Location = new Point(817, 256);
             comboBoxCast2.Name = "comboBoxCast2";
             comboBoxCast2.Size = new Size(115, 23);
-            comboBoxCast2.TabIndex = 25;
+            comboBoxCast2.TabIndex = 10;
             comboBoxCast2.SelectedIndexChanged += comboBoxCast2_SelectedIndexChanged_1;
             // 
             // labelCast2
@@ -373,7 +373,7 @@
             checkBoxMirrorCast1.Location = new Point(576, 339);
             checkBoxMirrorCast1.Name = "checkBoxMirrorCast1";
             checkBoxMirrorCast1.Size = new Size(90, 19);
-            checkBoxMirrorCast1.TabIndex = 29;
+            checkBoxMirrorCast1.TabIndex = 14;
             checkBoxMirrorCast1.Text = "Mirror Cast1";
             checkBoxMirrorCast1.UseVisualStyleBackColor = true;
             checkBoxMirrorCast1.CheckedChanged += checkBoxMirrorCast1_CheckedChanged;
@@ -385,7 +385,7 @@
             checkBoxMirrorCast2.Location = new Point(757, 339);
             checkBoxMirrorCast2.Name = "checkBoxMirrorCast2";
             checkBoxMirrorCast2.Size = new Size(90, 19);
-            checkBoxMirrorCast2.TabIndex = 30;
+            checkBoxMirrorCast2.TabIndex = 16;
             checkBoxMirrorCast2.Text = "Mirror Cast2";
             checkBoxMirrorCast2.UseVisualStyleBackColor = true;
             checkBoxMirrorCast2.CheckedChanged += checkBoxMirrorCast2_CheckedChanged;
@@ -397,7 +397,7 @@
             checkBoxBillboard1.Location = new Point(672, 339);
             checkBoxBillboard1.Name = "checkBoxBillboard1";
             checkBoxBillboard1.Size = new Size(79, 19);
-            checkBoxBillboard1.TabIndex = 31;
+            checkBoxBillboard1.TabIndex = 15;
             checkBoxBillboard1.Text = "Billboard1";
             checkBoxBillboard1.UseVisualStyleBackColor = true;
             // 
@@ -408,7 +408,7 @@
             checkBoxBillboard2.Location = new Point(853, 339);
             checkBoxBillboard2.Name = "checkBoxBillboard2";
             checkBoxBillboard2.Size = new Size(79, 19);
-            checkBoxBillboard2.TabIndex = 32;
+            checkBoxBillboard2.TabIndex = 17;
             checkBoxBillboard2.Text = "Billboard2";
             checkBoxBillboard2.UseVisualStyleBackColor = true;
             // 
@@ -419,7 +419,7 @@
             checkBoxUseMapLight.Location = new Point(623, 408);
             checkBoxUseMapLight.Name = "checkBoxUseMapLight";
             checkBoxUseMapLight.Size = new Size(102, 19);
-            checkBoxUseMapLight.TabIndex = 33;
+            checkBoxUseMapLight.TabIndex = 20;
             checkBoxUseMapLight.Text = "Use Map Light";
             checkBoxUseMapLight.UseVisualStyleBackColor = true;
             // 
@@ -431,7 +431,7 @@
             comboBoxWindowPosition.Location = new Point(576, 379);
             comboBoxWindowPosition.Name = "comboBoxWindowPosition";
             comboBoxWindowPosition.Size = new Size(175, 23);
-            comboBoxWindowPosition.TabIndex = 34;
+            comboBoxWindowPosition.TabIndex = 18;
             comboBoxWindowPosition.SelectedIndexChanged += comboBoxWindowPosition_SelectedIndexChanged;
             // 
             // labelWindowPosition
@@ -441,7 +441,7 @@
             labelWindowPosition.Location = new Point(576, 361);
             labelWindowPosition.Name = "labelWindowPosition";
             labelWindowPosition.Size = new Size(97, 15);
-            labelWindowPosition.TabIndex = 35;
+            labelWindowPosition.TabIndex = 18;
             labelWindowPosition.Text = "Window Position";
             // 
             // comboBoxSpeechBubble
@@ -451,7 +451,7 @@
             comboBoxSpeechBubble.Location = new Point(757, 379);
             comboBoxSpeechBubble.Name = "comboBoxSpeechBubble";
             comboBoxSpeechBubble.Size = new Size(175, 23);
-            comboBoxSpeechBubble.TabIndex = 36;
+            comboBoxSpeechBubble.TabIndex = 19;
             // 
             // labelSpeechBubble
             // 
@@ -460,7 +460,7 @@
             labelSpeechBubble.Location = new Point(757, 361);
             labelSpeechBubble.Name = "labelSpeechBubble";
             labelSpeechBubble.Size = new Size(85, 15);
-            labelSpeechBubble.TabIndex = 37;
+            labelSpeechBubble.TabIndex = 19;
             labelSpeechBubble.Text = "Speech Bubble";
             // 
             // radioButtonTalkCast1
@@ -470,7 +470,7 @@
             radioButtonTalkCast1.Location = new Point(576, 314);
             radioButtonTalkCast1.Name = "radioButtonTalkCast1";
             radioButtonTalkCast1.Size = new Size(76, 19);
-            radioButtonTalkCast1.TabIndex = 38;
+            radioButtonTalkCast1.TabIndex = 12;
             radioButtonTalkCast1.TabStop = true;
             radioButtonTalkCast1.Text = "Talk Cast1";
             radioButtonTalkCast1.UseVisualStyleBackColor = true;
@@ -482,7 +482,7 @@
             radioButtonTalkCast2.Location = new Point(757, 314);
             radioButtonTalkCast2.Name = "radioButtonTalkCast2";
             radioButtonTalkCast2.Size = new Size(76, 19);
-            radioButtonTalkCast2.TabIndex = 39;
+            radioButtonTalkCast2.TabIndex = 13;
             radioButtonTalkCast2.TabStop = true;
             radioButtonTalkCast2.Text = "Talk Cast2";
             radioButtonTalkCast2.UseVisualStyleBackColor = true;
@@ -494,7 +494,7 @@
             checkBoxWindowHidden.Location = new Point(757, 408);
             checkBoxWindowHidden.Name = "checkBoxWindowHidden";
             checkBoxWindowHidden.Size = new Size(112, 19);
-            checkBoxWindowHidden.TabIndex = 40;
+            checkBoxWindowHidden.TabIndex = 21;
             checkBoxWindowHidden.Text = "Window Hidden";
             checkBoxWindowHidden.UseVisualStyleBackColor = true;
             // 
@@ -628,15 +628,16 @@
             prevTextBoxNPLCR.ReadOnly = true;
             prevTextBoxNPLCR.Size = new Size(108, 23);
             prevTextBoxNPLCR.TabIndex = 46;
+            prevTextBoxNPLCR.TabStop = false;
             // 
             // prevPictureBoxCast1
             // 
             prevPictureBoxCast1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             prevPictureBoxCast1.BackColor = SystemColors.GradientInactiveCaption;
             prevPictureBoxCast1.Image = Properties.Resources.prev_dumy;
-            prevPictureBoxCast1.Location = new Point(3, 69);
+            prevPictureBoxCast1.Location = new Point(3, 75);
             prevPictureBoxCast1.Name = "prevPictureBoxCast1";
-            prevPictureBoxCast1.Size = new Size(240, 240);
+            prevPictureBoxCast1.Size = new Size(223, 234);
             prevPictureBoxCast1.SizeMode = PictureBoxSizeMode.StretchImage;
             prevPictureBoxCast1.TabIndex = 46;
             prevPictureBoxCast1.TabStop = false;
@@ -646,9 +647,9 @@
             prevPictureBoxCast2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             prevPictureBoxCast2.BackColor = SystemColors.GradientInactiveCaption;
             prevPictureBoxCast2.Image = Properties.Resources.prev_dumy2;
-            prevPictureBoxCast2.Location = new Point(313, 69);
+            prevPictureBoxCast2.Location = new Point(329, 75);
             prevPictureBoxCast2.Name = "prevPictureBoxCast2";
-            prevPictureBoxCast2.Size = new Size(240, 240);
+            prevPictureBoxCast2.Size = new Size(224, 234);
             prevPictureBoxCast2.SizeMode = PictureBoxSizeMode.StretchImage;
             prevPictureBoxCast2.TabIndex = 47;
             prevPictureBoxCast2.TabStop = false;
@@ -659,7 +660,7 @@
             buttonReload.Location = new Point(12, 449);
             buttonReload.Name = "buttonReload";
             buttonReload.Size = new Size(100, 40);
-            buttonReload.TabIndex = 45;
+            buttonReload.TabIndex = 26;
             buttonReload.Text = "Reload";
             buttonReload.UseVisualStyleBackColor = true;
             buttonReload.Click += buttonReload_Click;
@@ -675,7 +676,7 @@
             buttonStreamSkip.Location = new Point(258, 449);
             buttonStreamSkip.Name = "buttonStreamSkip";
             buttonStreamSkip.Size = new Size(100, 40);
-            buttonStreamSkip.TabIndex = 47;
+            buttonStreamSkip.TabIndex = 28;
             buttonStreamSkip.Text = "Skip streaming";
             buttonStreamSkip.UseVisualStyleBackColor = true;
             buttonStreamSkip.Click += buttonStreamSkip_Click;
@@ -691,6 +692,7 @@
             prevTextBoxNotes.ScrollBars = ScrollBars.Vertical;
             prevTextBoxNotes.Size = new Size(346, 86);
             prevTextBoxNotes.TabIndex = 48;
+            prevTextBoxNotes.TabStop = false;
             // 
             // prevTextBoxActCast1
             // 
@@ -701,6 +703,7 @@
             prevTextBoxActCast1.ReadOnly = true;
             prevTextBoxActCast1.Size = new Size(217, 23);
             prevTextBoxActCast1.TabIndex = 49;
+            prevTextBoxActCast1.TabStop = false;
             // 
             // prevTextBoxActCast2
             // 
@@ -711,6 +714,7 @@
             prevTextBoxActCast2.ReadOnly = true;
             prevTextBoxActCast2.Size = new Size(217, 23);
             prevTextBoxActCast2.TabIndex = 50;
+            prevTextBoxActCast2.TabStop = false;
             // 
             // buttonPreview
             // 
@@ -718,7 +722,7 @@
             buttonPreview.Location = new Point(470, 403);
             buttonPreview.Name = "buttonPreview";
             buttonPreview.Size = new Size(100, 40);
-            buttonPreview.TabIndex = 51;
+            buttonPreview.TabIndex = 31;
             buttonPreview.Text = "Preview";
             buttonPreview.UseVisualStyleBackColor = true;
             buttonPreview.Click += buttonPreview_Click;
@@ -729,7 +733,7 @@
             buttonDuplicateRow.Location = new Point(470, 357);
             buttonDuplicateRow.Name = "buttonDuplicateRow";
             buttonDuplicateRow.Size = new Size(100, 40);
-            buttonDuplicateRow.TabIndex = 52;
+            buttonDuplicateRow.TabIndex = 30;
             buttonDuplicateRow.Text = "Duplicate";
             buttonDuplicateRow.UseVisualStyleBackColor = true;
             buttonDuplicateRow.Click += buttonDuplicateRow_Click;
@@ -743,7 +747,7 @@
             checkBoxAutoScroll.Location = new Point(249, 332);
             checkBoxAutoScroll.Name = "checkBoxAutoScroll";
             checkBoxAutoScroll.Size = new Size(83, 19);
-            checkBoxAutoScroll.TabIndex = 53;
+            checkBoxAutoScroll.TabIndex = 23;
             checkBoxAutoScroll.Text = "Auto scroll";
             checkBoxAutoScroll.UseVisualStyleBackColor = true;
             // 
@@ -753,7 +757,7 @@
             buttonMoveDown.Location = new Point(12, 403);
             buttonMoveDown.Name = "buttonMoveDown";
             buttonMoveDown.Size = new Size(100, 40);
-            buttonMoveDown.TabIndex = 54;
+            buttonMoveDown.TabIndex = 25;
             buttonMoveDown.Text = "Move ▼";
             buttonMoveDown.UseVisualStyleBackColor = true;
             buttonMoveDown.Click += buttonMoveDownRow_Click;
@@ -764,7 +768,7 @@
             buttonMoveUp.Location = new Point(12, 357);
             buttonMoveUp.Name = "buttonMoveUp";
             buttonMoveUp.Size = new Size(100, 40);
-            buttonMoveUp.TabIndex = 55;
+            buttonMoveUp.TabIndex = 24;
             buttonMoveUp.Text = "Move ▲";
             buttonMoveUp.UseVisualStyleBackColor = true;
             buttonMoveUp.Click += buttonMoveUpRow_Click;
@@ -826,12 +830,14 @@
             Controls.Add(buttonNextRow);
             Controls.Add(buttonPreviousRow);
             Controls.Add(buttonReload);
+            KeyPreview = true;
             MinimumSize = new Size(960, 540);
             Name = "FormPreviewEditor";
             Text = "Preview Editor";
             FormClosing += FormPreviewEditor_FormClosing;
             FormClosed += FormPreviewEditor_FormClosed;
             Shown += UpdatePreview;
+            KeyDown += FormPreviewEditor_KeyDown;
             ((System.ComponentModel.ISupportInitialize)numericUpDownBlspd).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownBlrate).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownLipspd).EndInit();

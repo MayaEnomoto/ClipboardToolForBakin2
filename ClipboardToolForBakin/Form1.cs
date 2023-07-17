@@ -1,6 +1,9 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using ClipboardToolForBakin2;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -12,6 +15,7 @@ namespace ClipboardToolForBakin
 {
     public partial class MainForm : Form
     {
+        private string _currentFilePath = "";
         private BindingSource _bindingSource;
         private BindingList<BakinPanelData.RowData> _dataList;
         private Rectangle dragBox;
@@ -45,6 +49,7 @@ namespace ClipboardToolForBakin
             buttonCopyToClipboard.Enabled = false;
 
             FormComboBoxConfig.InitComboBoxItems(_comboBoxItems);
+            UpdateWindowTitle();
         }
 
         private void InitializeDataGrid()
@@ -316,21 +321,28 @@ namespace ClipboardToolForBakin
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                ReadCsv(openFileDialog.FileName);
+                _currentFilePath = openFileDialog.FileName;
+                try
+                {
+                    ReadCsv(openFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error opening file: " + ex.Message);
+                    _currentFilePath = "";
+                }
+                UpdateWindowTitle();
             }
         }
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog
-            {
-                Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
-            };
+            SaveCSV();
+        }
 
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                WriteCsv(saveFileDialog.FileName);
-            }
+        private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveAsCSV();
         }
 
         private void buttonCopyToClipboard_Click(object sender, EventArgs e)
@@ -592,6 +604,7 @@ namespace ClipboardToolForBakin
                     _FormPreviewEditor.RowChangeRequested += FormPreviewEditor_RowChangeRequested;
                     _FormPreviewEditor.RowSwapRequested += FormPreviewEditor_RowSwapRequested;
                     _FormPreviewEditor.RowAddRequested += FormPreviewEditor_RowAddRequested;
+                    _FormPreviewEditor.CSVSaveRequested += FormPreviewEditor_CSVSaveRequested;
                     _FormPreviewEditor.UpdateComboBoxItems(_comboBoxItems);
                 }
                 else
@@ -646,7 +659,7 @@ namespace ClipboardToolForBakin
             }
         }
 
-        private void FormPreviewEditor_RowChangeRequested(object sender, PreviewRowEventArgs e)
+        private void FormPreviewEditor_RowChangeRequested(object sender, PreviewEditorEventArgs e)
         {
             if (dataGridView.SelectedRows.Count >= 1)
             {
@@ -752,6 +765,11 @@ namespace ClipboardToolForBakin
             {
                 dataGridView.FirstDisplayedScrollingRowIndex = insertIndex;
             }
+        }
+
+        private void FormPreviewEditor_CSVSaveRequested(object sender, SaveCSVEventArgs e)
+        {
+            SaveCSV();
         }
 
         private void CheckClipboard(object sender, EventArgs e)
@@ -952,6 +970,8 @@ namespace ClipboardToolForBakin
             {
                 _dataList.Clear();
                 _bindingSource.ResetBindings(false);
+                _currentFilePath = null;
+                UpdateWindowTitle();
             }
         }
 
@@ -973,16 +993,99 @@ namespace ClipboardToolForBakin
         {
             if (e.Control && e.KeyCode == Keys.S)
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog
-                {
-                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
-                };
-
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    WriteCsv(saveFileDialog.FileName);
-                }
+                SaveCSV();
                 e.SuppressKeyPress = true;
+            }
+        }
+
+        private void SaveCSV()
+        {
+            if (!string.IsNullOrEmpty(_currentFilePath))
+            {
+                try
+                {
+                    WriteCsv(_currentFilePath);
+                    MessageBox.Show("File saved successfully.", "Save Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error saving file: " + ex.Message);
+                    _currentFilePath = "";
+                }
+                UpdateWindowTitle();
+            }
+            else
+            {
+                SaveAsCSV();
+            }
+        }
+
+        private void SaveAsCSV()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
+            };
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                _currentFilePath = saveFileDialog.FileName;
+                try
+                {
+                    WriteCsv(_currentFilePath);
+                    MessageBox.Show("File saved successfully.", "Save Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error saving file: " + ex.Message);
+                    _currentFilePath = "";
+                }
+                UpdateWindowTitle();
+            }
+        }
+
+        private void UpdateWindowTitle()
+        {
+            var exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.exe");
+            var versionInfo = FileVersionInfo.GetVersionInfo(exePath);
+            var fileVersion = versionInfo.FileVersion;
+            var appName = Assembly.GetExecutingAssembly().GetName().Name;
+
+            if (!string.IsNullOrEmpty(_currentFilePath))
+            {
+                this.Text = $"{appName} ({fileVersion}) : {_currentFilePath}";
+            }
+            else
+            {
+                this.Text = $"{appName} ({fileVersion})";
+            }
+        }
+
+        private void buttonReplaceUUID_Click(object sender, EventArgs e)
+        {
+            var formChangeValue = new FormReplaceUUID(_comboBoxItems);
+            if (formChangeValue.ShowDialog() == DialogResult.OK)
+            {
+                string oldValue = formChangeValue.OldValue;
+                string newValue = formChangeValue.NewValue;
+
+                int replaceCount = 0;
+
+                foreach (DataGridViewRow row in dataGridView.Rows)
+                {
+                    foreach (string columnName in new[] { "Cast1", "Cast2", "SpeechBubble" })
+                    {
+                        var cell = row.Cells[columnName];
+                        if ((string)cell.Value == oldValue)
+                        {
+                            cell.Value = newValue;
+                            replaceCount++;
+                        }
+                    }
+                }
+
+                dataGridView.Refresh();
+                MessageBox.Show($"{replaceCount} times replaced.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

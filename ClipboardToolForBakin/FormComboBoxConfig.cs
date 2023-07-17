@@ -303,14 +303,33 @@ namespace ClipboardToolForBakin2
 
         public List<ResourceItem> LoadItemsFromJsonFile(string filePath)
         {
-            var jsonString = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<List<ResourceItem>>(jsonString);
+            try
+            {
+                var jsonString = File.ReadAllText(filePath);
+                return JsonSerializer.Deserialize<List<ResourceItem>>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                MessageBox.Show($"An error occurred while loading the file: {ex.Message}", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
         }
 
         public void SaveItemsToJsonFile(List<ResourceItem> items, string filePath)
         {
-            var jsonString = JsonSerializer.Serialize(items);
-            File.WriteAllText(filePath, jsonString);
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                };
+                var jsonString = JsonSerializer.Serialize(items, options);
+                File.WriteAllText(filePath, jsonString);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while saving the file: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
@@ -330,7 +349,7 @@ namespace ClipboardToolForBakin2
             }
         }
 
-        private void buttonSave_Click(object sender, EventArgs e)
+        private void buttonSaveAs_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "JSON files (*.json)|*.json";

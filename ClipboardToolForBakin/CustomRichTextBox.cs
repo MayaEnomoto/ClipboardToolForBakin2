@@ -314,6 +314,10 @@ namespace ClipboardToolForBakin2
                     }
                     currentDelay = delay;
                 }
+                catch (OperationCanceledException)
+                {
+                    ;
+                }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error occurred: {ex.Message}");
