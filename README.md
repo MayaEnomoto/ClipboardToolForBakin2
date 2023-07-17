@@ -2,7 +2,7 @@
 
 [![](https://img.youtube.com/vi/shRh2ZDNV1A/0.jpg)](https://www.youtube.com/watch?v=shRh2ZDNV1A)
 
-![ShortcutKeys](https://github.com/MayaEnomoto/ClipboardToolForBakin2/assets/2517436/dc315268-0b86-465d-b1c0-f07cdf7c443b)
+![ShortcutKeys](https://github.com/MayaEnomoto/ClipboardToolForBakin2/assets/2517436/bb1b962e-e4d1-411c-8404-ecc9dbedd03a)
 
 [English Guide (youtube)](https://www.youtube.com/watch?v=8xlUcF1CxJU)
 
