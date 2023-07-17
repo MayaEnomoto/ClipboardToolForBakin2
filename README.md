@@ -8,7 +8,7 @@ This is a support tool for copying and pasting the Talk (conversation), Message,
 It is intended to be used for writing scenarios and then copying and pasting them into Bakin as a conversation panel.
 
 The basic implementation is the same as ToolForBakin, but extended so that NPL, NPC, NPR, blspd, blrate, and lpspd can be set from the UI.
-The recommended image file size is about 256*256 to 512*512 square.
+The recommended image file size is about 256x256 to 512x512 square.
 
 You can also clipboard from Bakin, but only the three types of event panels mentioned above can be copied.  
 We try to skip reading unsupported event panels as much as possible, but it is not perfect.
