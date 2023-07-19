@@ -6,7 +6,7 @@
 
         public PreviewEditorEventArgs(int change)
         {
-            Change = change;
+            this.Change = change;
         }
     }
 
@@ -16,7 +16,7 @@
 
         public AddRowEventArgs(int add)
         {
-            Add = add;
+            this.Add = add;
         }
     }
 
@@ -26,14 +26,15 @@
 
         public SwapRowEventArgs(int change)
         {
-            Change = change;
+            this.Change = change;
         }
     }
     public class SaveCSVEventArgs : EventArgs
     {
-        public SaveCSVEventArgs()
+        public bool overwrite { get; }
+        public SaveCSVEventArgs(bool overwrite)
         {
-            ;
+            this.overwrite = overwrite;     
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using ClipboardToolForBakin;
+using System.Diagnostics;
 using System.Windows.Forms;
+using static ClipboardToolForBakin2.FormKeysSetting;
 
 namespace ClipboardToolForBakin2
 {
@@ -14,8 +16,11 @@ namespace ClipboardToolForBakin2
         public delegate void CSVSaveRequestHandler(object sender, SaveCSVEventArgs e);
         public event CSVSaveRequestHandler CSVSaveRequested;
         public event EventHandler<BakinPanelData.RowData> DataChanged;
+
         private BakinPanelData.RowData _data;
         private List<ResourceItem> _comboBoxItems;
+        private List<ShortcutKeyBinding> _shortcutKeyBindings;
+
         private Dictionary<string, Image> imageCache = new Dictionary<string, Image>();
         private CustomRichTextBox prevCustomRichTextBoxText = new CustomRichTextBox
         {
@@ -33,27 +38,17 @@ namespace ClipboardToolForBakin2
         private bool mirrorPictureBoxCast2 = false;
         private ToolTip toolTipKeys = new ToolTip();
 
-        public FormPreviewEditor(BakinPanelData.RowData rowData, List<ResourceItem> comboBoxItems)
+        public FormPreviewEditor(BakinPanelData.RowData rowData, List<ResourceItem> comboBoxItems, List<ShortcutKeyBinding> shortcutKeyBindings)
         {
             InitializeComponent();
             CreateInputHelperContextMenu();
             _data = rowData;
             _comboBoxItems = comboBoxItems;
+            _shortcutKeyBindings = shortcutKeyBindings;
             UpdateComboBoxes();
             panelPreview.Controls.Add(prevCustomRichTextBoxText);
             PopulateFieldsWithData();
-
-            toolTipKeys.SetToolTip(this.buttonDuplicateRow, "Duplicate row (Ctrl+Shift+D)");
-            toolTipKeys.SetToolTip(this.buttonPreview, "Preview (Ctrl+Shift+P)");
-            toolTipKeys.SetToolTip(this.buttonReload, "Reload (Ctrl+Shift+R)");
-            toolTipKeys.SetToolTip(this.buttonStreamSkip, "Skip Stream (Ctrl+S)");
-            toolTipKeys.SetToolTip(this.buttonNextRow, "Next row (Ctrl+→) or (Ctrl+↓)");
-            toolTipKeys.SetToolTip(this.buttonPreviousRow, "Previous row (Ctrl+←) or (Ctrl+↑)");
-            toolTipKeys.SetToolTip(this.buttonMoveUp, "Move up (Ctrl+Shift+↑)");
-            toolTipKeys.SetToolTip(this.buttonMoveDown, "Move down (Ctrl+Shift+↓)");
-            toolTipKeys.SetToolTip(this.radioButtonTalkCast1, "Talk cast1 (Ctrl+Shift+←)");
-            toolTipKeys.SetToolTip(this.radioButtonTalkCast2, "Talk cast2 (Ctrl+Shift+→)");
-            toolTipKeys.SetToolTip(this.buttonApply, "Apply (Ctrl+Enter)");
+            UpdateToolTipKeys();
         }
 
         public void UpdateComboBoxItems(List<ResourceItem> comboBoxItems)
@@ -1042,92 +1037,142 @@ namespace ClipboardToolForBakin2
 
         private void FormPreviewEditor_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control)
+            string shortcutKey = ShortcutKeyManager.KeyCodeToString(e);
+
+            foreach (var action in _shortcutKeyBindings)
             {
-                switch (e.KeyCode)
+                if (action.ShortcutKey == shortcutKey)
                 {
-                    case Keys.D:
-                        if (e.Shift)
-                        {
+                    switch (action.FunctionName)
+                    {
+                        case "Duplicate row":
                             buttonDuplicateRow.PerformClick();
-                        }
-                        break;
-                    case Keys.P:
-                        if (e.Shift)
-                        {
+                            break;
+                        case "Preview":
                             buttonPreview.PerformClick();
-                        }
-                        break;
-                    case Keys.R:
-                        if (e.Shift)
-                        {
+                            break;
+                        case "Reload":
                             buttonReload.PerformClick();
-                        }
-                        break;
-                    case Keys.S:
-                        if (e.Shift)
-                        {
+                            break;
+                        case "Skip Streaming":
                             buttonStreamSkip.PerformClick();
-                        }
-                        else
-                        {
+                            break;
+                        case "Next row":
+                            buttonNextRow.PerformClick();
+                            break;
+                        case "Previous row":
+                            buttonPreviousRow.PerformClick();
+                            break;
+                        case "Move up":
+                            buttonMoveUp.PerformClick();
+                            break;
+                        case "Move down":
+                            buttonMoveDown.PerformClick();
+                            break;
+                        case "Apply":
+                            buttonApply.PerformClick();
+                            break;
+                        case "Tag":
+                            comboBoxTagType.Focus();
+                            break;
+                        case "NPL":
+                            textBoxNPL.Focus();
+                            textBoxNPL.SelectionStart = textBoxNPL.Text.Length;
+                            break;
+                        case "NPC":
+                            textBoxNPC.Focus();
+                            textBoxNPC.SelectionStart = textBoxNPC.Text.Length;
+                            break;
+                        case "NPR":
+                            textBoxNPR.Focus();
+                            textBoxNPR.SelectionStart = textBoxNPR.Text.Length;
+                            break;
+                        case "Text":
+                            textBoxText.Focus();
+                            textBoxText.SelectionStart = textBoxText.Text.Length;
+                            break;
+                        case "Talk cast1":
+                            radioButtonTalkCast1.PerformClick();
+                            break;
+                        case "Talk cast2":
+                            radioButtonTalkCast2.PerformClick();
+                            break;
+                        case "Cast1":
+                            comboBoxCast1.Focus();
+                            break;
+                        case "Cast2":
+                            comboBoxCast2.Focus();
+                            break;
+                        case "Input Helper":
+                            Point position = textBoxText.GetPositionFromCharIndex(textBoxText.SelectionStart);
+                            position = this.PointToScreen(position);
+                            contextMenuStripInputHelper.Show(position);
+                            break;
+                        case "Save":
                             if (cancelTokenSource != null)
                             {
                                 cancelTokenSource.Cancel();
                             }
                             UpdateDataFromFields();
                             DataChanged?.Invoke(this, _data);
-                            CSVSaveRequested?.Invoke(this, new SaveCSVEventArgs());
-                        }
-                        break;
-                    case Keys.Right:
-                        if (e.Shift)
-                        {
-                            radioButtonTalkCast2.PerformClick();
-                        }
-                        else
-                        {
-                            buttonPreviousRow.PerformClick();
-                        }
-                        break;
-                    case Keys.Left:
-                        if (e.Shift)
-                        {
-                            radioButtonTalkCast1.PerformClick();
-                        }
-                        else
-                        {
-                            buttonPreviousRow.PerformClick();
-                        }
-                        break;
-                    case Keys.Up:
-                        if (e.Shift)
-                        {
-                            buttonMoveUp.PerformClick();
-                        }
-                        else
-                        {
-                            buttonPreviousRow.PerformClick();
-                        }
-                        break;
-                    case Keys.Down:
-                        if (e.Shift)
-                        {
-                            buttonMoveDown.PerformClick();
-                        }
-                        else
-                        {
-                            buttonNextRow.PerformClick();
-                        }
-                        break;
-                    case Keys.Enter:
-                        if (e.Shift)
-                        {
-                            buttonApply.PerformClick();
-                        }
-                        break;
+                            CSVSaveRequested?.Invoke(this, new SaveCSVEventArgs(true));
+                            break;
+                        case "Save As...":
+                            if (cancelTokenSource != null)
+                            {
+                                cancelTokenSource.Cancel();
+                            }
+                            UpdateDataFromFields();
+                            DataChanged?.Invoke(this, _data);
+                            CSVSaveRequested?.Invoke(this, new SaveCSVEventArgs(false));
+                            break;
+                    }
+                    e.SuppressKeyPress = true;
+                    return;
                 }
-                e.SuppressKeyPress = true;
+            }
+        }
+
+        public void UpdateToolTipKeys()
+        {
+            Dictionary<string, Control> controlDictionary = new Dictionary<string, Control>()
+            {
+                { "Duplicate row", buttonDuplicateRow },
+                { "Preview", buttonPreview },
+                { "Reload", buttonReload },
+                { "Skip Streaming", buttonStreamSkip },
+                { "Next row", buttonNextRow },
+                { "Previous row", buttonPreviousRow },
+                { "Move up", buttonMoveUp },
+                { "Move down", buttonMoveDown },
+                { "Apply", buttonApply },
+                { "Tag", comboBoxTagType },
+                { "NPL", textBoxNPL },
+                { "NPC", textBoxNPC },
+                { "NPR", textBoxNPR },
+                { "Text", textBoxText },
+                { "Talk cast1", radioButtonTalkCast1 },
+                { "Talk cast2", radioButtonTalkCast2 },
+                { "Cast1", comboBoxCast1 },
+                { "Cast2", comboBoxCast2 },
+            };
+
+            foreach (var action in _shortcutKeyBindings)
+            {
+                if (controlDictionary.TryGetValue(action.FunctionName, out var control))
+                {
+                    toolTipKeys.SetToolTip(control, $"{action.FunctionName} ({action.ShortcutKey})");
+                }
+            }
+        }
+
+        private void buttonShortcutKeysSetting_Click(object sender, EventArgs e)
+        {
+            FormKeysSetting keysettingForm = new FormKeysSetting(_shortcutKeyBindings);
+            if (keysettingForm.ShowDialog() == DialogResult.OK)
+            {
+                _shortcutKeyBindings = keysettingForm.GetShortcutKeyBindings();
+                UpdateToolTipKeys();
             }
         }
     }

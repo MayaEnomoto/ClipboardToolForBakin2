@@ -91,6 +91,7 @@
             checkBoxAutoScroll = new CheckBox();
             buttonMoveDown = new Button();
             buttonMoveUp = new Button();
+            buttonShortcutKeysSetting = new Button();
             ((System.ComponentModel.ISupportInitialize)numericUpDownBlspd).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownBlrate).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownLipspd).BeginInit();
@@ -773,11 +774,22 @@
             buttonMoveUp.UseVisualStyleBackColor = true;
             buttonMoveUp.Click += buttonMoveUpRow_Click;
             // 
+            // buttonShortcutKeysSetting
+            // 
+            buttonShortcutKeysSetting.Location = new Point(902, 12);
+            buttonShortcutKeysSetting.Name = "buttonShortcutKeysSetting";
+            buttonShortcutKeysSetting.Size = new Size(30, 30);
+            buttonShortcutKeysSetting.TabIndex = 33;
+            buttonShortcutKeysSetting.Text = "🛠️";
+            buttonShortcutKeysSetting.UseVisualStyleBackColor = true;
+            buttonShortcutKeysSetting.Click += buttonShortcutKeysSetting_Click;
+            // 
             // FormPreviewEditor
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(944, 501);
+            Controls.Add(buttonShortcutKeysSetting);
             Controls.Add(buttonMoveUp);
             Controls.Add(buttonMoveDown);
             Controls.Add(checkBoxAutoScroll);
@@ -921,5 +933,6 @@
         private CheckBox checkBoxAutoScroll;
         private Button buttonMoveDown;
         private Button buttonMoveUp;
+        private Button buttonShortcutKeysSetting;
     }
 }

@@ -38,10 +38,17 @@
             deleteSelectedRowsToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
+            newToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuItemFileOpen = new ToolStripMenuItem();
             toolStripMenuItemSaveAs = new ToolStripMenuItem();
             toolStripMenuItemFileSave = new ToolStripMenuItem();
-            clearToolStripMenuItem = new ToolStripMenuItem();
+            exitToolStripMenuItem = new ToolStripMenuItem();
+            uUIDToolStripMenuItem = new ToolStripMenuItem();
+            uUIDDefinitionToolStripMenuItem = new ToolStripMenuItem();
+            uUIDReplacerToolStripMenuItem = new ToolStripMenuItem();
+            settingsToolStripMenuItem = new ToolStripMenuItem();
+            viewChangeToolStripMenuItem = new ToolStripMenuItem();
+            shortcutKeysToolStripMenuItem = new ToolStripMenuItem();
             buttonCopyToClipboard = new Button();
             buttonPasteFromClipboard = new Button();
             buttonDeleteRows = new Button();
@@ -50,6 +57,7 @@
             buttonPreviewEditor = new Button();
             buttonUUIDdefinition = new Button();
             buttonReplaceUUID = new Button();
+            editorToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
             contextMenuStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
@@ -112,7 +120,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, clearToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editorToolStripMenuItem, uUIDToolStripMenuItem, settingsToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(944, 24);
@@ -121,38 +129,87 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuItemFileOpen, toolStripMenuItemSaveAs, toolStripMenuItemFileSave });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, toolStripMenuItemFileOpen, toolStripMenuItemSaveAs, toolStripMenuItemFileSave, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "File";
             // 
+            // newToolStripMenuItem
+            // 
+            newToolStripMenuItem.Name = "newToolStripMenuItem";
+            newToolStripMenuItem.Size = new Size(180, 22);
+            newToolStripMenuItem.Text = "New";
+            newToolStripMenuItem.Click += newToolStripMenuItem_Click;
+            // 
             // toolStripMenuItemFileOpen
             // 
             toolStripMenuItemFileOpen.Name = "toolStripMenuItemFileOpen";
-            toolStripMenuItemFileOpen.Size = new Size(123, 22);
+            toolStripMenuItemFileOpen.Size = new Size(180, 22);
             toolStripMenuItemFileOpen.Text = "Open";
             toolStripMenuItemFileOpen.Click += OpenToolStripMenuItem_Click;
             // 
             // toolStripMenuItemSaveAs
             // 
             toolStripMenuItemSaveAs.Name = "toolStripMenuItemSaveAs";
-            toolStripMenuItemSaveAs.Size = new Size(123, 22);
+            toolStripMenuItemSaveAs.Size = new Size(180, 22);
             toolStripMenuItemSaveAs.Text = "Save As...";
             toolStripMenuItemSaveAs.Click += SaveAsToolStripMenuItem_Click;
             // 
             // toolStripMenuItemFileSave
             // 
             toolStripMenuItemFileSave.Name = "toolStripMenuItemFileSave";
-            toolStripMenuItemFileSave.Size = new Size(123, 22);
+            toolStripMenuItemFileSave.Size = new Size(180, 22);
             toolStripMenuItemFileSave.Text = "Save";
             toolStripMenuItemFileSave.Click += SaveToolStripMenuItem_Click;
             // 
-            // clearToolStripMenuItem
+            // exitToolStripMenuItem
             // 
-            clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            clearToolStripMenuItem.Size = new Size(45, 20);
-            clearToolStripMenuItem.Text = "Clear";
-            clearToolStripMenuItem.Click += btnClearDataGridView_Click;
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new Size(180, 22);
+            exitToolStripMenuItem.Text = "Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // uUIDToolStripMenuItem
+            // 
+            uUIDToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { uUIDDefinitionToolStripMenuItem, uUIDReplacerToolStripMenuItem });
+            uUIDToolStripMenuItem.Name = "uUIDToolStripMenuItem";
+            uUIDToolStripMenuItem.Size = new Size(46, 20);
+            uUIDToolStripMenuItem.Text = "UUID";
+            // 
+            // uUIDDefinitionToolStripMenuItem
+            // 
+            uUIDDefinitionToolStripMenuItem.Name = "uUIDDefinitionToolStripMenuItem";
+            uUIDDefinitionToolStripMenuItem.Size = new Size(180, 22);
+            uUIDDefinitionToolStripMenuItem.Text = "UUID definition";
+            uUIDDefinitionToolStripMenuItem.Click += uUIDDefinitionToolStripMenuItem_Click;
+            // 
+            // uUIDReplacerToolStripMenuItem
+            // 
+            uUIDReplacerToolStripMenuItem.Name = "uUIDReplacerToolStripMenuItem";
+            uUIDReplacerToolStripMenuItem.Size = new Size(180, 22);
+            uUIDReplacerToolStripMenuItem.Text = "UUID replacer";
+            uUIDReplacerToolStripMenuItem.Click += uUIDReplacerToolStripMenuItem_Click;
+            // 
+            // settingsToolStripMenuItem
+            // 
+            settingsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { viewChangeToolStripMenuItem, shortcutKeysToolStripMenuItem });
+            settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            settingsToolStripMenuItem.Size = new Size(61, 20);
+            settingsToolStripMenuItem.Text = "Settings";
+            // 
+            // viewChangeToolStripMenuItem
+            // 
+            viewChangeToolStripMenuItem.Name = "viewChangeToolStripMenuItem";
+            viewChangeToolStripMenuItem.Size = new Size(180, 22);
+            viewChangeToolStripMenuItem.Text = "View Change";
+            viewChangeToolStripMenuItem.Click += viewChangeToolStripMenuItem_Click;
+            // 
+            // shortcutKeysToolStripMenuItem
+            // 
+            shortcutKeysToolStripMenuItem.Name = "shortcutKeysToolStripMenuItem";
+            shortcutKeysToolStripMenuItem.Size = new Size(180, 22);
+            shortcutKeysToolStripMenuItem.Text = "Shortcut keys";
+            shortcutKeysToolStripMenuItem.Click += shortcutKeysToolStripMenuItem_Click;
             // 
             // buttonCopyToClipboard
             // 
@@ -244,6 +301,13 @@
             buttonReplaceUUID.UseVisualStyleBackColor = true;
             buttonReplaceUUID.Click += buttonReplaceUUID_Click;
             // 
+            // editorToolStripMenuItem
+            // 
+            editorToolStripMenuItem.Name = "editorToolStripMenuItem";
+            editorToolStripMenuItem.Size = new Size(50, 20);
+            editorToolStripMenuItem.Text = "Editor";
+            editorToolStripMenuItem.Click += editorToolStripMenuItem_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -287,7 +351,6 @@
         private ToolStripMenuItem deleteSelectedRowsToolStripMenuItem;
         private Button buttonInsertNewRow;
         private ToolStripMenuItem InsertNewRowToolStripMenuItem;
-        private ToolStripMenuItem clearToolStripMenuItem;
         private Button buttonViewChange;
         private Button buttonPreviewEditor;
         private Button buttonUUIDdefinition;
@@ -296,5 +359,14 @@
         private ToolStripMenuItem toolStripMenuItemFileSave;
         private ToolStripMenuItem toolStripMenuItemSaveAs;
         private Button buttonReplaceUUID;
+        private ToolStripMenuItem settingsToolStripMenuItem;
+        private ToolStripMenuItem shortcutKeysToolStripMenuItem;
+        private ToolStripMenuItem viewChangeToolStripMenuItem;
+        private ToolStripMenuItem exitToolStripMenuItem;
+        private ToolStripMenuItem newToolStripMenuItem;
+        private ToolStripMenuItem uUIDToolStripMenuItem;
+        private ToolStripMenuItem uUIDDefinitionToolStripMenuItem;
+        private ToolStripMenuItem uUIDReplacerToolStripMenuItem;
+        private ToolStripMenuItem editorToolStripMenuItem;
     }
 }

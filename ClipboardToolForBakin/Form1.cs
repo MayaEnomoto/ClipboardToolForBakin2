@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -9,6 +10,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using static ClipboardToolForBakin.BakinPanelData;
+using static ClipboardToolForBakin2.FormKeysSetting;
 using static ClipboardToolForBakin2.StringUtil;
 
 namespace ClipboardToolForBakin
@@ -25,6 +27,7 @@ namespace ClipboardToolForBakin
         private System.Windows.Forms.Timer clipboardCheckTimer;
         private FormPreviewEditor _FormPreviewEditor = null;
         private List<ResourceItem> _comboBoxItems = new List<ResourceItem>();
+        private List<ShortcutKeyBinding> _shortcutKeyBindings = new List<ShortcutKeyBinding>();
 
         public MainForm()
         {
@@ -47,7 +50,9 @@ namespace ClipboardToolForBakin
             buttonPreviewEditor.Enabled = false;
             buttonDeleteRows.Enabled = false;
             buttonCopyToClipboard.Enabled = false;
+            editorToolStripMenuItem.Enabled = false;
 
+            ShortcutKeyManager.LoadShortcutKeys(ref _shortcutKeyBindings);
             FormComboBoxConfig.InitComboBoxItems(_comboBoxItems);
             UpdateWindowTitle();
         }
@@ -546,10 +551,12 @@ namespace ClipboardToolForBakin
             if (dataGridView.SelectedRows.Count > 0 || dataGridView.SelectedCells.Count > 0)
             {
                 buttonPreviewEditor.Enabled = true;
+                editorToolStripMenuItem.Enabled = true;
             }
             else
             {
                 buttonPreviewEditor.Enabled = false;
+                editorToolStripMenuItem.Enabled = false;
             }
         }
 
@@ -599,19 +606,19 @@ namespace ClipboardToolForBakin
 
                 if (_FormPreviewEditor == null || _FormPreviewEditor.IsDisposed)
                 {
-                    _FormPreviewEditor = new FormPreviewEditor(rowData, _comboBoxItems);
+                    _FormPreviewEditor = new FormPreviewEditor(rowData, _comboBoxItems, _shortcutKeyBindings);
                     _FormPreviewEditor.DataChanged += FormPreviewEditor_DataChanged;
                     _FormPreviewEditor.RowChangeRequested += FormPreviewEditor_RowChangeRequested;
                     _FormPreviewEditor.RowSwapRequested += FormPreviewEditor_RowSwapRequested;
                     _FormPreviewEditor.RowAddRequested += FormPreviewEditor_RowAddRequested;
                     _FormPreviewEditor.CSVSaveRequested += FormPreviewEditor_CSVSaveRequested;
-                    _FormPreviewEditor.UpdateComboBoxItems(_comboBoxItems);
                 }
                 else
                 {
                     _FormPreviewEditor.UpdateSelectedData(rowData);
                     _FormPreviewEditor.UpdateComboBoxItems(_comboBoxItems);
                     _FormPreviewEditor.PopulateFieldsWithData();
+                    _FormPreviewEditor.UpdateToolTipKeys();
                 }
 
                 if (!_FormPreviewEditor.Visible)
@@ -769,7 +776,14 @@ namespace ClipboardToolForBakin
 
         private void FormPreviewEditor_CSVSaveRequested(object sender, SaveCSVEventArgs e)
         {
-            SaveCSV();
+            if (e.overwrite == true)
+            {
+                SaveCSV();
+            }
+            else
+            {
+                SaveAsCSV();
+            }
         }
 
         private void CheckClipboard(object sender, EventArgs e)
@@ -962,19 +976,6 @@ namespace ClipboardToolForBakin
             }
         }
 
-        private void btnClearDataGridView_Click(object sender, EventArgs e)
-        {
-            DialogResult result = MessageBox.Show("Do you really want to clear the DataGridView?", "Clear DataGridView", MessageBoxButtons.YesNo);
-
-            if (result == DialogResult.Yes)
-            {
-                _dataList.Clear();
-                _bindingSource.ResetBindings(false);
-                _currentFilePath = null;
-                UpdateWindowTitle();
-            }
-        }
-
         private void buttonPreviewEditor_Click(object sender, EventArgs e)
         {
             OpenFormBWithSelectedRowData();
@@ -1087,6 +1088,56 @@ namespace ClipboardToolForBakin
                 dataGridView.Refresh();
                 MessageBox.Show($"{replaceCount} times replaced.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void shortcutKeysToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormKeysSetting keysettingForm = new FormKeysSetting(_shortcutKeyBindings);
+            if (keysettingForm.ShowDialog() == DialogResult.OK)
+            {
+                _shortcutKeyBindings = keysettingForm.GetShortcutKeyBindings();
+            }
+        }
+
+        private void viewChangeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            buttonViewChange.PerformClick();
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Do you really want to clear the DataGridView?", "Clear DataGridView", MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes)
+            {
+                _dataList.Clear();
+                _bindingSource.ResetBindings(false);
+                _currentFilePath = null;
+                UpdateWindowTitle();
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Exit the application. Is it OK if the unsaved data will be lost?", "Exit Application", MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes)
+            {
+                this.Close();
+            }
+        }
+
+        private void uUIDDefinitionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            buttonUUIDdefinition.PerformClick();
+        }
+
+        private void uUIDReplacerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            buttonReplaceUUID.PerformClick();
+        }
+
+        private void editorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            buttonPreviewEditor.PerformClick();
         }
     }
 }
