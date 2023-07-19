@@ -2,7 +2,7 @@
 
 [![](https://img.youtube.com/vi/shRh2ZDNV1A/0.jpg)](https://www.youtube.com/watch?v=shRh2ZDNV1A)
 
-![ShortcutKeys](https://github.com/MayaEnomoto/ClipboardToolForBakin2/assets/2517436/bb1b962e-e4d1-411c-8404-ecc9dbedd03a)
+Shortcut keys are now customizable. Please refer to the end of this document for default values.
 
 [English Guide (youtube)](https://www.youtube.com/watch?v=8xlUcF1CxJU)
 
@@ -35,4 +35,6 @@ Bakin側からクリップボードで取り込むこともできますが、前
 また、クリップボードのデータ構造は、出力結果からの推測である為、予期しないエラー（特にBakin側のアップデートがあった場合等）が発生する事があります。  
 必ずプロジェクトのバックアップを取ってから利用してください。
 
+
+![shortcut](https://github.com/MayaEnomoto/ClipboardToolForBakin2/assets/2517436/1531a16f-89db-44ce-a874-210e04c28068)
 
