@@ -43,6 +43,8 @@
             toolStripMenuItemSaveAs = new ToolStripMenuItem();
             toolStripMenuItemFileSave = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
+            editToolStripMenuItem = new ToolStripMenuItem();
+            previewEditorToolStripMenuItem = new ToolStripMenuItem();
             uUIDToolStripMenuItem = new ToolStripMenuItem();
             uUIDDefinitionToolStripMenuItem = new ToolStripMenuItem();
             uUIDReplacerToolStripMenuItem = new ToolStripMenuItem();
@@ -57,7 +59,7 @@
             buttonPreviewEditor = new Button();
             buttonUUIDdefinition = new Button();
             buttonReplaceUUID = new Button();
-            editorToolStripMenuItem = new ToolStripMenuItem();
+            toolTip1 = new ToolTip(components);
             ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
             contextMenuStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
@@ -120,7 +122,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editorToolStripMenuItem, uUIDToolStripMenuItem, settingsToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, uUIDToolStripMenuItem, settingsToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(944, 24);
@@ -137,37 +139,57 @@
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(180, 22);
+            newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
+            newToolStripMenuItem.Size = new Size(194, 22);
             newToolStripMenuItem.Text = "New";
             newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // toolStripMenuItemFileOpen
             // 
             toolStripMenuItemFileOpen.Name = "toolStripMenuItemFileOpen";
-            toolStripMenuItemFileOpen.Size = new Size(180, 22);
+            toolStripMenuItemFileOpen.ShortcutKeys = Keys.Control | Keys.O;
+            toolStripMenuItemFileOpen.Size = new Size(194, 22);
             toolStripMenuItemFileOpen.Text = "Open";
             toolStripMenuItemFileOpen.Click += OpenToolStripMenuItem_Click;
             // 
             // toolStripMenuItemSaveAs
             // 
             toolStripMenuItemSaveAs.Name = "toolStripMenuItemSaveAs";
-            toolStripMenuItemSaveAs.Size = new Size(180, 22);
+            toolStripMenuItemSaveAs.ShortcutKeys = Keys.Control | Keys.Shift | Keys.S;
+            toolStripMenuItemSaveAs.Size = new Size(194, 22);
             toolStripMenuItemSaveAs.Text = "Save As...";
             toolStripMenuItemSaveAs.Click += SaveAsToolStripMenuItem_Click;
             // 
             // toolStripMenuItemFileSave
             // 
             toolStripMenuItemFileSave.Name = "toolStripMenuItemFileSave";
-            toolStripMenuItemFileSave.Size = new Size(180, 22);
+            toolStripMenuItemFileSave.ShortcutKeys = Keys.Control | Keys.S;
+            toolStripMenuItemFileSave.Size = new Size(194, 22);
             toolStripMenuItemFileSave.Text = "Save";
             toolStripMenuItemFileSave.Click += SaveToolStripMenuItem_Click;
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(180, 22);
+            exitToolStripMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
+            exitToolStripMenuItem.Size = new Size(194, 22);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // editToolStripMenuItem
+            // 
+            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { previewEditorToolStripMenuItem });
+            editToolStripMenuItem.Name = "editToolStripMenuItem";
+            editToolStripMenuItem.Size = new Size(39, 20);
+            editToolStripMenuItem.Text = "Edit";
+            // 
+            // previewEditorToolStripMenuItem
+            // 
+            previewEditorToolStripMenuItem.Name = "previewEditorToolStripMenuItem";
+            previewEditorToolStripMenuItem.ShortcutKeys = Keys.F11;
+            previewEditorToolStripMenuItem.Size = new Size(180, 22);
+            previewEditorToolStripMenuItem.Text = "Preview Editor";
+            previewEditorToolStripMenuItem.Click += buttonPreviewEditor_Click;
             // 
             // uUIDToolStripMenuItem
             // 
@@ -179,16 +201,18 @@
             // uUIDDefinitionToolStripMenuItem
             // 
             uUIDDefinitionToolStripMenuItem.Name = "uUIDDefinitionToolStripMenuItem";
-            uUIDDefinitionToolStripMenuItem.Size = new Size(180, 22);
+            uUIDDefinitionToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.U;
+            uUIDDefinitionToolStripMenuItem.Size = new Size(210, 22);
             uUIDDefinitionToolStripMenuItem.Text = "UUID definition";
-            uUIDDefinitionToolStripMenuItem.Click += uUIDDefinitionToolStripMenuItem_Click;
+            uUIDDefinitionToolStripMenuItem.Click += buttonUUIDDefinition_Click;
             // 
             // uUIDReplacerToolStripMenuItem
             // 
             uUIDReplacerToolStripMenuItem.Name = "uUIDReplacerToolStripMenuItem";
-            uUIDReplacerToolStripMenuItem.Size = new Size(180, 22);
+            uUIDReplacerToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.U;
+            uUIDReplacerToolStripMenuItem.Size = new Size(210, 22);
             uUIDReplacerToolStripMenuItem.Text = "UUID replacer";
-            uUIDReplacerToolStripMenuItem.Click += uUIDReplacerToolStripMenuItem_Click;
+            uUIDReplacerToolStripMenuItem.Click += buttonReplaceUUID_Click;
             // 
             // settingsToolStripMenuItem
             // 
@@ -200,14 +224,16 @@
             // viewChangeToolStripMenuItem
             // 
             viewChangeToolStripMenuItem.Name = "viewChangeToolStripMenuItem";
-            viewChangeToolStripMenuItem.Size = new Size(180, 22);
+            viewChangeToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.D;
+            viewChangeToolStripMenuItem.Size = new Size(185, 22);
             viewChangeToolStripMenuItem.Text = "View Change";
-            viewChangeToolStripMenuItem.Click += viewChangeToolStripMenuItem_Click;
+            viewChangeToolStripMenuItem.Click += buttonViewChange_Click;
             // 
             // shortcutKeysToolStripMenuItem
             // 
             shortcutKeysToolStripMenuItem.Name = "shortcutKeysToolStripMenuItem";
-            shortcutKeysToolStripMenuItem.Size = new Size(180, 22);
+            shortcutKeysToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.K;
+            shortcutKeysToolStripMenuItem.Size = new Size(185, 22);
             shortcutKeysToolStripMenuItem.Text = "Shortcut keys";
             shortcutKeysToolStripMenuItem.Click += shortcutKeysToolStripMenuItem_Click;
             // 
@@ -301,13 +327,6 @@
             buttonReplaceUUID.UseVisualStyleBackColor = true;
             buttonReplaceUUID.Click += buttonReplaceUUID_Click;
             // 
-            // editorToolStripMenuItem
-            // 
-            editorToolStripMenuItem.Name = "editorToolStripMenuItem";
-            editorToolStripMenuItem.Size = new Size(50, 20);
-            editorToolStripMenuItem.Text = "Editor";
-            editorToolStripMenuItem.Click += editorToolStripMenuItem_Click;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -367,6 +386,8 @@
         private ToolStripMenuItem uUIDToolStripMenuItem;
         private ToolStripMenuItem uUIDDefinitionToolStripMenuItem;
         private ToolStripMenuItem uUIDReplacerToolStripMenuItem;
-        private ToolStripMenuItem editorToolStripMenuItem;
+        private ToolStripMenuItem editToolStripMenuItem;
+        private ToolStripMenuItem previewEditorToolStripMenuItem;
+        private ToolTip toolTip1;
     }
 }

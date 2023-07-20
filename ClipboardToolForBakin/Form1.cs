@@ -23,7 +23,6 @@ namespace ClipboardToolForBakin
         private Rectangle dragBox;
         private int rowIndexFromMouseDown;
         private int rowIndexOfItemUnderMouseToDrop;
-        private string lastClipboardText = string.Empty;
         private System.Windows.Forms.Timer clipboardCheckTimer;
         private FormPreviewEditor _FormPreviewEditor = null;
         private List<ResourceItem> _comboBoxItems = new List<ResourceItem>();
@@ -41,7 +40,6 @@ namespace ClipboardToolForBakin
                 }
             }
 
-            lastClipboardText = Clipboard.GetText();
             buttonPasteFromClipboard.Enabled = Clipboard.ContainsData("Yukar2ScriptCommands");
             clipboardCheckTimer = new System.Windows.Forms.Timer();
             clipboardCheckTimer.Interval = 500;
@@ -50,11 +48,20 @@ namespace ClipboardToolForBakin
             buttonPreviewEditor.Enabled = false;
             buttonDeleteRows.Enabled = false;
             buttonCopyToClipboard.Enabled = false;
-            editorToolStripMenuItem.Enabled = false;
+            previewEditorToolStripMenuItem.Enabled = false;
 
             ShortcutKeyManager.LoadShortcutKeys(ref _shortcutKeyBindings);
             FormComboBoxConfig.InitComboBoxItems(_comboBoxItems);
             UpdateWindowTitle();
+
+            toolTip1.SetToolTip(buttonViewChange, "Ctrl+Sfhit+D");
+            toolTip1.SetToolTip(buttonPreviewEditor, "F11");
+            toolTip1.SetToolTip(buttonUUIDdefinition, "Ctrl+U");
+            toolTip1.SetToolTip(buttonReplaceUUID, "Ctrl+Sfhit+U");
+            toolTip1.SetToolTip(buttonInsertNewRow, "Ctrl+Sfhit+I");
+            toolTip1.SetToolTip(buttonDeleteRows, "Ctrl+Sfhit+D");
+            toolTip1.SetToolTip(buttonCopyToClipboard, "Ctrl+Sfhit+C");
+            toolTip1.SetToolTip(buttonPasteFromClipboard, "Ctrl+Sfhit+V");
         }
 
         private void InitializeDataGrid()
@@ -551,12 +558,12 @@ namespace ClipboardToolForBakin
             if (dataGridView.SelectedRows.Count > 0 || dataGridView.SelectedCells.Count > 0)
             {
                 buttonPreviewEditor.Enabled = true;
-                editorToolStripMenuItem.Enabled = true;
+                previewEditorToolStripMenuItem.Enabled = true;
             }
             else
             {
                 buttonPreviewEditor.Enabled = false;
-                editorToolStripMenuItem.Enabled = false;
+                previewEditorToolStripMenuItem.Enabled = false;
             }
         }
 
@@ -992,10 +999,41 @@ namespace ClipboardToolForBakin
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.S)
+            if (e.Control && e.Shift)
             {
-                SaveCSV();
-                e.SuppressKeyPress = true;
+                switch (e.KeyCode)
+                {
+                    case Keys.I:
+                        if (buttonInsertNewRow.Enabled == true)
+                        {
+                            buttonInsertNewRow.PerformClick();
+                            e.SuppressKeyPress = true;
+                        }
+                        break;
+                    case Keys.D:
+                        if (buttonDeleteRows.Enabled == true)
+                        {
+                            buttonDeleteRows.PerformClick();
+                            e.SuppressKeyPress = true;
+                        }
+                        break;
+                    case Keys.C:
+                        if (buttonCopyToClipboard.Enabled == true)
+                        {
+                            buttonCopyToClipboard.PerformClick();
+                            e.SuppressKeyPress = true;
+                        }
+                        break;
+                    case Keys.V:
+                        if (buttonPasteFromClipboard.Enabled == true)
+                        {
+                            buttonPasteFromClipboard.PerformClick();
+                            e.SuppressKeyPress = true;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -1123,21 +1161,6 @@ namespace ClipboardToolForBakin
             {
                 this.Close();
             }
-        }
-
-        private void uUIDDefinitionToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            buttonUUIDdefinition.PerformClick();
-        }
-
-        private void uUIDReplacerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            buttonReplaceUUID.PerformClick();
-        }
-
-        private void editorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            buttonPreviewEditor.PerformClick();
         }
     }
 }
