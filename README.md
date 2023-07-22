@@ -6,6 +6,8 @@ Shortcut keys are now customizable. Please refer to the end of this document for
 
 [English Guide (youtube)](https://www.youtube.com/watch?v=8xlUcF1CxJU)
 
+[English GUide Ver2.4.0 function (youtube)](https://www.youtube.com/watch?v=Hfff0LJeg_8)
+
 This is a support tool for copying and pasting the Talk (conversation), Message, and Notes event panels of RPG Developer Bakin.  
 It is intended to be used for writing scenarios and then copying and pasting them into Bakin as a conversation panel.
 
@@ -21,6 +23,8 @@ Please be sure to back up your project before use.
 
 ---
 [Japanese Guide (youtube)](https://www.youtube.com/watch?v=shRh2ZDNV1A)
+
+[Japanese Guide Ver2.4.0 function (youtube)](https://www.youtube.com/watch?v=6zDd8ZkF47U)
 
 RPG Developer BakinのTalk(会話), Message(メッセージ), Notes(注釈)のイベントパネルを良しなにコピペする為のサポートツールです。  
 シナリオを書いてから会話パネルとして纏めてBakinにコピペしたりする使い方を想定しています。
@@ -42,7 +46,7 @@ Additional libs (ClipboardToolForBakin)
 
 Additional libs (AsImageProcessingLibrary)
 
-[ImageSharp](https://www.nuget.org/packages/SixLabors.ImageSharp)https://www.nuget.org/packages/SixLabors.ImageSharp
+[ImageSharp ](https://www.nuget.org/packages/SixLabors.ImageSharp)https://www.nuget.org/packages/SixLabors.ImageSharp
 
 ---
 Default Shortcut.
