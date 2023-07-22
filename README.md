@@ -35,6 +35,16 @@ Bakin側からクリップボードで取り込むこともできますが、前
 また、クリップボードのデータ構造は、出力結果からの推測である為、予期しないエラー（特にBakin側のアップデートがあった場合等）が発生する事があります。  
 必ずプロジェクトのバックアップを取ってから利用してください。
 
+---
+Additional libs (ClipboardToolForBakin)
+
+[CsvHelper ](https://www.nuget.org/packages/csvhelper/)https://www.nuget.org/packages/csvhelper/
+
+Additional libs (AsImageProcessingLibrary)
+
+[ImageSharp](https://www.nuget.org/packages/SixLabors.ImageSharp)https://www.nuget.org/packages/SixLabors.ImageSharp
+
+---
+Default Shortcut.
 
 ![shortcut](https://github.com/MayaEnomoto/ClipboardToolForBakin2/assets/2517436/1531a16f-89db-44ce-a874-210e04c28068)
-
