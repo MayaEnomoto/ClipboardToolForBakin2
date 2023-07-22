@@ -1,27 +1,32 @@
-﻿using ClipboardToolForBakin;
-using System.Diagnostics;
-using System.Windows.Forms;
+﻿using AsImageProcessingLibrary;
+using ClipboardToolForBakin;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 using static ClipboardToolForBakin2.FormKeysSetting;
+using Size = System.Drawing.Size;
+using Image = System.Drawing.Image;
+using Color = System.Drawing.Color;
+using Point = System.Drawing.Point;
+using static AsImageProcessingLibrary.ImageProcessor;
+using System.Windows.Forms;
+using System.Reflection;
 
 namespace ClipboardToolForBakin2
 {
     public partial class FormPreviewEditor : Form
     {
         public delegate void RowChangeRequestedHandler(object sender, PreviewEditorEventArgs e);
-        public event RowChangeRequestedHandler RowChangeRequested;
+        public event RowChangeRequestedHandler? RowChangeRequested;
         public delegate void RowAddRequestedHandler(object sender, AddRowEventArgs e);
-        public event RowAddRequestedHandler RowAddRequested;
+        public event RowAddRequestedHandler? RowAddRequested;
         public delegate void RowSwapRequestedHandler(object sender, SwapRowEventArgs e);
-        public event RowSwapRequestedHandler RowSwapRequested;
+        public event RowSwapRequestedHandler? RowSwapRequested;
         public delegate void CSVSaveRequestHandler(object sender, SaveCSVEventArgs e);
-        public event CSVSaveRequestHandler CSVSaveRequested;
-        public event EventHandler<BakinPanelData.RowData> DataChanged;
-
+        public event CSVSaveRequestHandler? CSVSaveRequested;
+        public event EventHandler<BakinPanelData.RowData>? DataChanged;
         private BakinPanelData.RowData _data;
         private List<ResourceItem> _comboBoxItems;
         private List<ShortcutKeyBinding> _shortcutKeyBindings;
-
-        private Dictionary<string, Image> imageCache = new Dictionary<string, Image>();
         private CustomRichTextBox prevCustomRichTextBoxText = new CustomRichTextBox
         {
             Font = new Font("Arial", 10, FontStyle.Regular),
@@ -34,13 +39,20 @@ namespace ClipboardToolForBakin2
         };
         private CancellationTokenSource? cancelTokenSource;
         private CancellationTokenSource? skipTokenSource;
-        private bool mirrorPictureBoxCast1 = false;
-        private bool mirrorPictureBoxCast2 = false;
         private ToolTip toolTipKeys = new ToolTip();
+        private ImageProcessor _imageProcessor = new ImageProcessor();
+        private System.Drawing.Image? _drawingMergedImage;
+        private System.Drawing.Image? _drawingCast1Image;
+        private System.Drawing.Image? _drawingCast2Image;
+        private bool enableFileCache = false;
 
         public FormPreviewEditor(BakinPanelData.RowData rowData, List<ResourceItem> comboBoxItems, List<ShortcutKeyBinding> shortcutKeyBindings)
         {
             InitializeComponent();
+            panelCast1.EnableDoubleBuffering();
+            panelCast2.EnableDoubleBuffering();
+            panelPreview.EnableDoubleBuffering();
+            InitializePreview();
             CreateInputHelperContextMenu();
             _data = rowData;
             _comboBoxItems = comboBoxItems;
@@ -49,6 +61,56 @@ namespace ClipboardToolForBakin2
             panelPreview.Controls.Add(prevCustomRichTextBoxText);
             PopulateFieldsWithData();
             UpdateToolTipKeys();
+        }
+
+        public void InitializePreview()
+        {
+            panelCast1.Paint += (s, e) =>
+            {
+                if (_drawingCast1Image != null)
+                {
+                    e.Graphics.DrawImage(_drawingCast1Image, 0, 0, panelCast1.Width, panelCast1.Height);
+                }
+            };
+            panelCast2.Paint += (s, e) =>
+            {
+                if (_drawingCast2Image != null)
+                {
+                    e.Graphics.DrawImage(_drawingCast2Image, 0, 0, panelCast2.Width, panelCast2.Height);
+                }
+            };
+            panelPreview.Paint += (s, e) =>
+            {
+                if (_drawingMergedImage != null)
+                {
+                    float srcWidth = _drawingMergedImage.Width;
+                    float srcHeight = _drawingMergedImage.Height;
+                    float dstWidth = panelPreview.Width;
+                    float dstHeight = panelPreview.Height;
+                    float srcAspect = srcWidth / srcHeight;
+                    float dstAspect = dstWidth / dstHeight;
+                    float scaledWidth;
+                    float scaledHeight;
+                    if (srcAspect > dstAspect)
+                    {
+                        scaledWidth = dstWidth;
+                        scaledHeight = scaledWidth / srcAspect;
+                    }
+                    else
+                    {
+                        scaledHeight = dstHeight;
+                        scaledWidth = scaledHeight * srcAspect;
+                    }
+                    float xPosition = (dstWidth - scaledWidth) / 2;
+                    float yPosition = (dstHeight - scaledHeight) / 2;
+                    e.Graphics.DrawImage(_drawingMergedImage, xPosition, yPosition, scaledWidth, scaledHeight);
+                }
+            };
+        }
+
+        public void SetGraphicCache(bool enable)
+        {
+            enableFileCache = enable;
         }
 
         public void UpdateComboBoxItems(List<ResourceItem> comboBoxItems)
@@ -65,49 +127,66 @@ namespace ClipboardToolForBakin2
             AdjustComboBoxDropdownWidth(comboBoxCast1);
             AdjustComboBoxDropdownWidth(comboBoxCast2);
             AdjustComboBoxDropdownWidth(comboBoxSpeechBubble);
+            GenerateCacheImage();
         }
 
         private void UpdateComboBox(ComboBox comboBox)
         {
             int cnt = 0;
+            _imageProcessor.ClearProcessedImageCache();
             comboBox.Items.Clear();
             foreach (var item in _comboBoxItems)
             {
                 if ((!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value)) || cnt == 0 || cnt == 1)
                 {
                     comboBox.Items.Add($"[{_comboBoxItems.IndexOf(item)}]:{item.Key}");
-                    CacheImage(item.ImagePath);
                 }
                 cnt++;
             }
         }
 
-        private void CacheImage(string filePath)
+        void GenerateCacheImage()
         {
-            if (imageCache.ContainsKey(filePath)) return;
-
-            if (!File.Exists(filePath)) return;
-
-            try
+            _imageProcessor.Dispose();
+            _imageProcessor = new ImageProcessor();
+            if (enableFileCache == true)
             {
-                using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                foreach (var item in _comboBoxItems)
                 {
-                    imageCache[filePath] = new Bitmap(stream);
+                    if ((!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value)) && !string.IsNullOrEmpty(item.ImagePath))
+                    {
+                        _imageProcessor.CacheImage(item.ImagePath);
+                    }
                 }
             }
-            catch (Exception e)
+            var resourceNames = new List<string>
             {
-                Console.WriteLine($"Error loading image from {filePath}: {e.Message}");
-            }
-        }
-
-        public Image GetImageFromCache(string filePath)
-        {
-            if (imageCache.ContainsKey(filePath))
+                "prev_dummy",
+                "prev_dummy2",
+                "prev_event",
+                "prev_event2",
+                "prev_event3",
+                "prev_pc01",
+                "prev_pc02",
+                "prev_pc03",
+                "prev_pc04",
+                "prev_pc11",
+                "prev_pc12",
+                "prev_pc13",
+                "prev_pc14"
+            };
+            foreach (var resourceName in resourceNames)
             {
-                return imageCache[filePath];
+                object? resource = Properties.Resources.ResourceManager.GetObject(resourceName);
+                if (resource is Bitmap bitmap)
+                {
+                    _imageProcessor.CacheImageFromBitmap(resourceName, bitmap);
+                }
+                else
+                {
+                    Console.WriteLine($"Resource {resourceName} not found or could not be loaded.");
+                }
             }
-            return null;
         }
 
         public void UpdateSelectedData(BakinPanelData.RowData data)
@@ -121,7 +200,7 @@ namespace ClipboardToolForBakin2
             int selectedCast2Index = comboBoxCast2.SelectedIndex;
             int selectedSpeechBubbleIndex = comboBoxSpeechBubble.SelectedIndex;
 
-            data.Tag = comboBoxTagType.SelectedItem?.ToString();
+            data.Tag = comboBoxTagType.SelectedItem?.ToString() ?? "Notes";
             data.Text = textBoxText.Text.Replace(Environment.NewLine, "\\n");
             data.NPL = textBoxNPL.Text;
             data.NPC = textBoxNPC.Text;
@@ -146,7 +225,7 @@ namespace ClipboardToolForBakin2
             data.Billboard1 = checkBoxBillboard1.Checked;
             data.Billboard2 = checkBoxBillboard2.Checked;
             data.WindowVisible = checkBoxWindowHidden.Checked;
-            data.WindowPosition = comboBoxWindowPosition.SelectedItem?.ToString();
+            data.WindowPosition = comboBoxWindowPosition.SelectedItem?.ToString() ?? "Down";
             //data.SpeechBubble = comboBoxSpeechBubble.SelectedItem?.ToString();
             data.UseMapLight = checkBoxUseMapLight.Checked;
             data.Memo = textBoxMemo.Text.Replace(Environment.NewLine, "\\n");
@@ -254,10 +333,8 @@ namespace ClipboardToolForBakin2
                 comboBoxCast2.SelectedIndex = 0;
             }
 
-            mirrorPictureBoxCast1 = false;
-            setPictureBoxCast1();
-            mirrorPictureBoxCast2 = false;
-            setPictureBoxCast2();
+            updatePictureBoxCast1();
+            updatePictureBoxCast2();
 
             int matchingSpeechBubbleIndex = _comboBoxItems.FindIndex(i => i.Value == _data.SpeechBubble);
             comboBoxSpeechBubble.SelectedIndex = matchingSpeechBubbleIndex != -1 ? matchingSpeechBubbleIndex : 1;
@@ -274,7 +351,7 @@ namespace ClipboardToolForBakin2
 
         private void comboBoxTagType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string selectedTag = comboBoxTagType.SelectedItem.ToString();
+            string selectedTag = comboBoxTagType.SelectedItem?.ToString() ?? "Notes";
 
             switch (selectedTag)
             {
@@ -354,6 +431,8 @@ namespace ClipboardToolForBakin2
                     textBoxMemo.Enabled = true;
                     break;
             }
+            updatePictureBoxCast1();
+            updatePictureBoxCast2();
         }
 
         private void InsertTextAtCaret(string text)
@@ -434,167 +513,259 @@ namespace ClipboardToolForBakin2
             comboBox.DropDownWidth = maxWidth;
         }
 
-        private void comboBoxCast1_SelectedIndexChanged_1(object sender, EventArgs e)
+        private void comboBoxCast1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            setPictureBoxCast1();
+            updatePictureBoxCast1();
         }
 
-        private void setPictureBoxCast1()
+        private void updatePictureBoxCast1()
         {
-            var selectedItemString = comboBoxCast1.SelectedItem as string;
-            if (selectedItemString == null)
+            Image<Rgba32>? imageCast = null;
+            try
             {
-                pictureBoxCast1.Image = null;
-                return;
-            }
-            var selectedIndexStr = selectedItemString.Split(':')[0].TrimStart('[').TrimEnd(']');
-            if (!int.TryParse(selectedIndexStr, out int selectedIndex))
-            {
-                pictureBoxCast1.Image = null;
-                return;
-            }
-
-            if (selectedIndex < 0 || selectedIndex >= _comboBoxItems.Count)
-            {
-                pictureBoxCast1.Image = null;
-                return;
-            }
-
-            var selectedItem = _comboBoxItems[selectedIndex];
-            if (selectedIndex == 1)
-            {
-                pictureBoxCast1.Image = Properties.Resources.prev_dumy;
-                Rotate_pictureBoxCast1(checkBoxMirrorCast1.Checked);
-            }
-            else if (string.IsNullOrEmpty(selectedItem.ImagePath))
-            {
-                pictureBoxCast1.Image = null;
-                return;
-            }
-            else
-            {
-                var oldImage = pictureBoxCast1.Image;
-                var image = GetImageFromCache(selectedItem.ImagePath);
-                if (image != null)
+                if (comboBoxCast1.SelectedIndex > 0 && comboBoxTagType.SelectedItem?.ToString() == "Talk")
                 {
-                    var bitmap = new Bitmap(image);
-                    pictureBoxCast1.Image = bitmap;
-                    Rotate_pictureBoxCast1(checkBoxMirrorCast1.Checked);
+                    if (!String.IsNullOrEmpty(_comboBoxItems[comboBoxCast1.SelectedIndex].ImagePath))
+                    {
+                        imageCast = _imageProcessor.GetImage(_comboBoxItems[comboBoxCast1.SelectedIndex].ImagePath, checkBoxMirrorCast1.Checked, 1.0f);
+                    }
+                    else
+                    {
+                        imageCast = _imageProcessor.GetImage("prev_dummy", checkBoxMirrorCast1.Checked, 1.0f);
+                    }
                 }
-                else
+                var imagesToMerge = new List<(Image<Rgba32>, ImagePositionAndSize)>();
+                if (imageCast != null)
                 {
-                    pictureBoxCast1.Image = null;
+                    imagesToMerge.Add((imageCast, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(0, 0), Size = new SixLabors.ImageSharp.Size(52, 52) }));
                 }
-                oldImage?.Dispose();
+                using (var mergedImage = _imageProcessor.MergePictureBoxImages(imagesToMerge))
+                {
+                    _drawingCast1Image?.Dispose();
+                    _drawingCast1Image = _imageProcessor.GetAsDrawingImage(mergedImage);
+                }
+                panelCast1.Invalidate();
+            }
+            finally
+            {
+                imageCast?.Dispose();
             }
         }
 
-        private void comboBoxCast2_SelectedIndexChanged_1(object sender, EventArgs e)
+        private void comboBoxCast2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            setPictureBoxCast2();
+            updatePictureBoxCast2();
         }
 
-        private void setPictureBoxCast2()
+        private void updatePictureBoxCast2()
         {
-            var selectedItemString = comboBoxCast2.SelectedItem as string;
-            if (selectedItemString == null)
+            Image<Rgba32>? imageCast = null;
+            try
             {
-                pictureBoxCast2.Image = null;
-                return;
-            }
-            var selectedIndexStr = selectedItemString.Split(':')[0].TrimStart('[').TrimEnd(']');
-            if (!int.TryParse(selectedIndexStr, out int selectedIndex))
-            {
-                pictureBoxCast2.Image = null;
-                return;
-            }
-
-            if (selectedIndex < 0 || selectedIndex >= _comboBoxItems.Count)
-            {
-                pictureBoxCast2.Image = null;
-                return;
-            }
-
-            var selectedItem = _comboBoxItems[selectedIndex];
-            if (selectedIndex == 1)
-            {
-                pictureBoxCast2.Image = Properties.Resources.prev_dumy2;
-                Rotate_pictureBoxCast2(checkBoxMirrorCast2.Checked);
-            }
-            else if (string.IsNullOrEmpty(selectedItem.ImagePath))
-            {
-                pictureBoxCast2.Image = null;
-                return;
-            }
-            else
-            {
-                var oldImage = pictureBoxCast2.Image;
-                var image = GetImageFromCache(selectedItem.ImagePath);
-                if (image != null)
+                if (comboBoxCast2.SelectedIndex > 0 && comboBoxTagType.SelectedItem?.ToString() == "Talk")
                 {
-                    var bitmap = new Bitmap(image);
-                    pictureBoxCast2.Image = bitmap;
-                    Rotate_pictureBoxCast2(checkBoxMirrorCast2.Checked);
+                    if (!String.IsNullOrEmpty(_comboBoxItems[comboBoxCast2.SelectedIndex].ImagePath))
+                    {
+                        imageCast = _imageProcessor.GetImage(_comboBoxItems[comboBoxCast2.SelectedIndex].ImagePath, checkBoxMirrorCast2.Checked, 1.0f);
+                    }
+                    else
+                    {
+                        imageCast = _imageProcessor.GetImage("prev_dummy2", checkBoxMirrorCast2.Checked, 1.0f);
+                    }
                 }
-                else
+
+                var imagesToMerge = new List<(Image<Rgba32>, ImagePositionAndSize)>();
+                if (imageCast != null)
                 {
-                    pictureBoxCast2.Image = null;
+                    imagesToMerge.Add((imageCast, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(0, 0), Size = new SixLabors.ImageSharp.Size(52, 52) }));
                 }
-                oldImage?.Dispose();
+                using (var mergedImage = _imageProcessor.MergePictureBoxImages(imagesToMerge))
+                {
+                    _drawingCast2Image?.Dispose();
+                    _drawingCast2Image = _imageProcessor.GetAsDrawingImage(mergedImage);
+                }
+                panelCast2.Invalidate();
+            }
+            finally
+            {
+                imageCast?.Dispose();
             }
         }
 
         private void checkBoxMirrorCast1_CheckedChanged(object sender, EventArgs e)
         {
-            Rotate_pictureBoxCast1(checkBoxMirrorCast1.Checked);
+            updatePictureBoxCast1();
         }
 
         private void checkBoxMirrorCast2_CheckedChanged(object sender, EventArgs e)
         {
-            Rotate_pictureBoxCast2(checkBoxMirrorCast2.Checked);
-        }
-
-        private void Rotate_pictureBoxCast1(bool rotate)
-        {
-            if (pictureBoxCast1.Image == null) return;
-            if (mirrorPictureBoxCast1 != rotate)
-            {
-                mirrorPictureBoxCast1 = rotate;
-                pictureBoxCast1.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                pictureBoxCast1.Refresh();
-            }
-        }
-
-        private void Rotate_pictureBoxCast2(bool rotate)
-        {
-            if (pictureBoxCast2.Image == null) return;
-            if (mirrorPictureBoxCast2 != rotate)
-            {
-                mirrorPictureBoxCast2 = rotate;
-                pictureBoxCast2.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                pictureBoxCast2.Refresh();
-            }
+            updatePictureBoxCast2();
         }
 
         private void doUpdatePreview()
         {
-            PrevPictureBoxUpdate();
-            PositionAbsoluteControls();
             PositionVariableControls();
-            panelPreview.Refresh();
-        }
-
-        private void PositionAbsoluteControls()
-        {
-
+            UpdateText();
         }
 
         private void PositionVariableControls()
         {
+            Image<Rgba32>? imageCast1 = null;
+            Image<Rgba32>? imageCast2 = null;
+            Image<Rgba32>? imageBubble1 = null;
+            Image<Rgba32>? imageBubble2 = null;
+            Image<Rgba32>? imageBubble3 = null;
+            Image<Rgba32>? imageBubble4 = null;
+            Image<Rgba32>? imageBubbleThis = null;
+            Image<Rgba32>? imageBubbleEvent = null;
+            Image<Rgba32>? imageBubble3B = null;
+            try
+            {
+                if (comboBoxTagType.SelectedItem?.ToString() == "Talk")
+                {
+                    if (comboBoxCast1.SelectedIndex <= 0)
+                    {
+                        ;
+                    }
+                    else if (!String.IsNullOrEmpty(_comboBoxItems[comboBoxCast1.SelectedIndex].ImagePath))
+                    {
+                        imageCast1 = _imageProcessor.GetImage(_comboBoxItems[comboBoxCast1.SelectedIndex].ImagePath, checkBoxMirrorCast1.Checked, radioButtonTalkCast1.Checked ? 1.0f : 0.5f);
+                    }
+                    else
+                    {
+                        imageCast1 = _imageProcessor.GetImage("prev_dummy", checkBoxMirrorCast1.Checked, radioButtonTalkCast1.Checked ? 1.0f : 0.5f);
+                    }
+
+                    if (comboBoxCast2.SelectedIndex <= 0)
+                    {
+                        ;
+                    }
+                    else if (!String.IsNullOrEmpty(_comboBoxItems[comboBoxCast2.SelectedIndex].ImagePath))
+                    {
+                        imageCast2 = _imageProcessor.GetImage(_comboBoxItems[comboBoxCast2.SelectedIndex].ImagePath, checkBoxMirrorCast2.Checked, radioButtonTalkCast2.Checked ? 1.0f : 0.5f);
+                    }
+                    else
+                    {
+                        imageCast2 = _imageProcessor.GetImage("prev_dummy2", checkBoxMirrorCast2.Checked, radioButtonTalkCast2.Checked ? 1.0f : 0.5f);
+                    }
+                }
+                if (comboBoxTagType.SelectedItem?.ToString() == "Talk" || comboBoxTagType.SelectedItem?.ToString() == "Message")
+                {
+                    switch (comboBoxWindowPosition.SelectedItem?.ToString())
+                    {
+                        case "Bubble(Player)":
+                            imageBubble1 = _imageProcessor.GetImage("prev_pc11", false, 1.0f);
+                            imageBubble2 = _imageProcessor.GetImage("prev_pc02", false, 1.0f);
+                            imageBubble3 = _imageProcessor.GetImage("prev_pc03", false, 1.0f);
+                            imageBubble4 = _imageProcessor.GetImage("prev_pc04", false, 1.0f);
+                            imageBubbleThis = _imageProcessor.GetImage("prev_event", false, 1.0f);
+                            break;
+                        case "Bubble(ThisEvent)":
+                            imageBubble1 = _imageProcessor.GetImage("prev_pc01", false, 1.0f);
+                            imageBubble2 = _imageProcessor.GetImage("prev_pc02", false, 1.0f);
+                            imageBubble3 = _imageProcessor.GetImage("prev_pc03", false, 1.0f);
+                            imageBubble4 = _imageProcessor.GetImage("prev_pc04", false, 1.0f);
+                            imageBubbleThis = _imageProcessor.GetImage("prev_event2", false, 1.0f);
+                            break;
+                        case "Bubble(Member2)":
+                            imageBubble1 = _imageProcessor.GetImage("prev_pc01", false, 1.0f);
+                            imageBubble2 = _imageProcessor.GetImage("prev_pc12", false, 1.0f);
+                            imageBubble3 = _imageProcessor.GetImage("prev_pc03", false, 1.0f);
+                            imageBubble4 = _imageProcessor.GetImage("prev_pc04", false, 1.0f);
+                            imageBubbleThis = _imageProcessor.GetImage("prev_event", false, 1.0f);
+                            break;
+                        case "Bubble(Member3)":
+                            imageBubble1 = _imageProcessor.GetImage("prev_pc01", false, 1.0f);
+                            imageBubble2 = _imageProcessor.GetImage("prev_pc02", false, 1.0f);
+                            imageBubble3 = _imageProcessor.GetImage("prev_pc13", false, 1.0f);
+                            imageBubble4 = _imageProcessor.GetImage("prev_pc04", false, 1.0f);
+                            imageBubbleThis = _imageProcessor.GetImage("prev_event", false, 1.0f);
+                            break;
+                        case "Bubble(Member4)":
+                            imageBubble1 = _imageProcessor.GetImage("prev_pc01", false, 1.0f);
+                            imageBubble2 = _imageProcessor.GetImage("prev_pc02", false, 1.0f);
+                            imageBubble3 = _imageProcessor.GetImage("prev_pc03", false, 1.0f);
+                            imageBubble4 = _imageProcessor.GetImage("prev_pc14", false, 1.0f);
+                            imageBubbleThis = _imageProcessor.GetImage("prev_event", false, 1.0f);
+                            break;
+                        case "Bubble(Event)":
+                            imageBubble3 = _imageProcessor.GetImage("prev_event3", false, 1.0f);
+                            if (comboBoxSpeechBubble.SelectedIndex <= 0)
+                            {
+                                ;
+                            }
+                            else if (!String.IsNullOrEmpty(_comboBoxItems[comboBoxSpeechBubble.SelectedIndex].ImagePath))
+                            {
+                                imageBubble3B = _imageProcessor.GetImage(_comboBoxItems[comboBoxSpeechBubble.SelectedIndex].ImagePath, false, 1.0f);
+                            }
+                            else
+                            {
+                                imageBubble3B = _imageProcessor.GetImage("prev_event", false, 1.0f);
+                            }
+                            break;
+                    }
+                }
+                    var imagesToMerge = new List<(Image<Rgba32>, ImagePositionAndSize)>();
+                if (imageCast1 != null)
+                {
+                    imagesToMerge.Add((imageCast1, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(0, 256), Size = new SixLabors.ImageSharp.Size(512, 512) }));
+                }
+                if (imageCast2 != null)
+                {
+                    imagesToMerge.Add((imageCast2, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(768, 256), Size = new SixLabors.ImageSharp.Size(512, 512) }));
+                }
+                if (imageBubble1 != null)
+                {
+                    imagesToMerge.Add((imageBubble1, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(0, 512), Size = new SixLabors.ImageSharp.Size(256, 256) }));
+                }
+                if (imageBubble2 != null)
+                {
+                    imagesToMerge.Add((imageBubble2, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(256, 512), Size = new SixLabors.ImageSharp.Size(256, 256) }));
+                }
+                if (imageBubble3B != null)
+                {
+                    imagesToMerge.Add((imageBubble3B, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(512, 512), Size = new SixLabors.ImageSharp.Size(256, 256) }));
+                }
+                if (imageBubble3 != null)
+                {
+                    imagesToMerge.Add((imageBubble3, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(512, 512), Size = new SixLabors.ImageSharp.Size(256, 256) }));
+                }
+                if (imageBubble4 != null)
+                {
+                    imagesToMerge.Add((imageBubble4, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(768, 512), Size = new SixLabors.ImageSharp.Size(256, 256) }));
+                }
+                if (imageBubbleThis != null)
+                {
+                    imagesToMerge.Add((imageBubbleThis, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(1024, 512), Size = new SixLabors.ImageSharp.Size(256, 256) }));
+                }
+                if (imageBubbleEvent != null)
+                {
+                    imagesToMerge.Add((imageBubbleEvent, new ImagePositionAndSize { Position = new SixLabors.ImageSharp.Point(512, 512), Size = new SixLabors.ImageSharp.Size(256, 256) }));
+                }
+
+                using (var mergedImage = _imageProcessor.MergeImages(imagesToMerge))
+                {
+                    _drawingMergedImage?.Dispose();
+                    _drawingMergedImage = _imageProcessor.GetAsDrawingImage(mergedImage);
+                }
+                panelPreview.Invalidate();
+            }
+            finally
+            {
+                imageCast1?.Dispose();
+                imageCast2?.Dispose();
+                imageBubble1?.Dispose();
+                imageBubble2?.Dispose();
+                imageBubble3?.Dispose();
+                imageBubble4?.Dispose();
+                imageBubbleThis?.Dispose();
+                imageBubbleEvent?.Dispose();
+                imageBubble3B?.Dispose();
+            }
+
             prevTextBoxNPLCR.Visible = false;
             prevTextBoxActCast1.Visible = false;
             prevTextBoxActCast2.Visible = false;
-            prevTableLayoutPanelBubble.Visible = false;
             if (comboBoxTagType.SelectedItem?.ToString() == "Talk")
             {
                 if (textBoxNPL.Text != String.Empty || textBoxNPC.Text != String.Empty || textBoxNPR.Text != String.Empty)
@@ -628,70 +799,12 @@ namespace ClipboardToolForBakin2
             int actualWidth = (int)(panelPreview.Width * relativeWidth);
             int actualHeight = (int)(panelPreview.Height * relativeHeight);
             prevCustomRichTextBoxText.Size = new Size(actualWidth, actualHeight);
-            prevTableLayoutPanelBubble.Size = new Size(panelPreview.Width, panelPreview.Width / 5);
 
             float relativeX = 175.0f / 960.0f;
             float relativeY = 400.0f / 540.0f;
-
             float relativeX2 = 175.0f / 960.0f;
             float relativeY2 = 365.0f / 540.0f;
-
-            string windowPosition = comboBoxWindowPosition.SelectedItem?.ToString();
-            prevTableLayoutPanelBubble.Visible = true;
-            prevPictureBoxPc1.Image?.Dispose();
-            prevPictureBoxPc2.Image?.Dispose();
-            prevPictureBoxPc3.Image?.Dispose();
-            prevPictureBoxPc4.Image?.Dispose();
-            prevPictureBoxEvent.Image?.Dispose();
-            switch (windowPosition)
-            {
-                case "Bubble(Player)":
-                    prevPictureBoxPc1.Image = Properties.Resources.prev_pc11;
-                    prevPictureBoxPc2.Image = Properties.Resources.prev_pc02;
-                    prevPictureBoxPc3.Image = Properties.Resources.prev_pc03;
-                    prevPictureBoxPc4.Image = Properties.Resources.prev_pc04;
-                    prevPictureBoxEvent.Image = Properties.Resources.prev_event;
-                    break;
-                case "Bubble(ThisEvent)":
-                    prevPictureBoxPc1.Image = Properties.Resources.prev_pc01;
-                    prevPictureBoxPc2.Image = Properties.Resources.prev_pc02;
-                    prevPictureBoxPc3.Image = Properties.Resources.prev_pc03;
-                    prevPictureBoxPc4.Image = Properties.Resources.prev_pc04;
-                    prevPictureBoxEvent.Image = Properties.Resources.prev_event2;
-                    break;
-                case "Bubble(Member2)":
-                    prevPictureBoxPc1.Image = Properties.Resources.prev_pc01;
-                    prevPictureBoxPc2.Image = Properties.Resources.prev_pc12;
-                    prevPictureBoxPc3.Image = Properties.Resources.prev_pc03;
-                    prevPictureBoxPc4.Image = Properties.Resources.prev_pc04;
-                    prevPictureBoxEvent.Image = Properties.Resources.prev_event;
-                    break;
-                case "Bubble(Member3)":
-                    prevPictureBoxPc1.Image = Properties.Resources.prev_pc01;
-                    prevPictureBoxPc2.Image = Properties.Resources.prev_pc02;
-                    prevPictureBoxPc3.Image = Properties.Resources.prev_pc13;
-                    prevPictureBoxPc4.Image = Properties.Resources.prev_pc04;
-                    prevPictureBoxEvent.Image = Properties.Resources.prev_event;
-                    break;
-                case "Bubble(Member4)":
-                    prevPictureBoxPc1.Image = Properties.Resources.prev_pc01;
-                    prevPictureBoxPc2.Image = Properties.Resources.prev_pc02;
-                    prevPictureBoxPc3.Image = Properties.Resources.prev_pc03;
-                    prevPictureBoxPc4.Image = Properties.Resources.prev_pc14;
-                    prevPictureBoxEvent.Image = Properties.Resources.prev_event;
-                    break;
-                case "Bubble(Event)":
-                    prevPictureBoxPc1.Image = null;
-                    prevPictureBoxPc2.Image = null;
-                    prevPictureBoxPc3.Image = getBubbleEventGraphic();
-                    prevPictureBoxPc4.Image = null;
-                    prevPictureBoxEvent.Image = null;
-                    break;
-                default:
-                    prevTableLayoutPanelBubble.Visible = false;
-                    break;
-            }
-
+            string windowPosition = comboBoxWindowPosition.SelectedItem?.ToString() ?? "Down";
             switch (windowPosition)
             {
                 case "Up":
@@ -727,41 +840,12 @@ namespace ClipboardToolForBakin2
             {
                 relativeX2 = 605.0f / 960.0f;
             }
-
             int actualX = (int)(panelPreview.Width * relativeX);
             int actualY = (int)(panelPreview.Height * relativeY);
             int actualX2 = (int)(panelPreview.Width * relativeX2);
             int actualY2 = (int)(panelPreview.Height * relativeY2);
             prevTextBoxNPLCR.Location = new Point(actualX2, actualY2);
             prevCustomRichTextBoxText.Location = new Point(actualX, actualY);
-            UpdateText();
-        }
-
-        private Image getBubbleEventGraphic()
-        {
-            var selectedItemString = comboBoxSpeechBubble.SelectedItem as string;
-            if (selectedItemString == null)
-            {
-                return Properties.Resources.prev_event3;
-            }
-            var selectedIndexStr = selectedItemString.Split(':')[0].TrimStart('[').TrimEnd(']');
-            if (!int.TryParse(selectedIndexStr, out int selectedIndex))
-            {
-                return Properties.Resources.prev_event3;
-            }
-
-            if (selectedIndex < 0 || selectedIndex >= _comboBoxItems.Count)
-            {
-                return Properties.Resources.prev_event3;
-            }
-
-            var selectedItem = _comboBoxItems[selectedIndex];
-            if (string.IsNullOrEmpty(selectedItem.ImagePath))
-            {
-                return Properties.Resources.prev_event3;
-            }
-
-            return new Bitmap(GetImageFromCache(selectedItem.ImagePath));
         }
 
         private async void UpdateText()
@@ -808,7 +892,7 @@ namespace ClipboardToolForBakin2
             skipTokenSource = new CancellationTokenSource();
             try
             {
-                await prevCustomRichTextBoxText.StreamText(textBoxText.Text, 100, checkBoxAutoScroll.Checked, cancelTokenSource.Token, skipTokenSource.Token);
+                await prevCustomRichTextBoxText.StreamText(textBoxText.Text, 20, checkBoxAutoScroll.Checked, cancelTokenSource.Token, skipTokenSource.Token);
             }
             catch (OperationCanceledException)
             {
@@ -820,82 +904,12 @@ namespace ClipboardToolForBakin2
             }
         }
 
-        private void PrevPictureBoxUpdate()
-        {
-            if (comboBoxTagType.SelectedItem?.ToString() != "Talk")
-            {
-                prevPictureBoxCast1.Visible = false;
-                prevPictureBoxCast2.Visible = false;
-                return;
-            }
-
-            float brightnessCast1 = 1.0f;
-            float brightnessCast2 = 1.0f;
-
-            if (radioButtonTalkCast1.Checked == false) brightnessCast1 = 0.5f;
-            if (radioButtonTalkCast2.Checked == false) brightnessCast2 = 0.5f;
-
-            if (pictureBoxCast1.Image != null)
-            {
-                Bitmap originalBitmap = new Bitmap(pictureBoxCast1.Image);
-                Bitmap adjustedBitmap = ChangeBrightness(originalBitmap, brightnessCast1);
-                prevPictureBoxCast1.Image?.Dispose();
-                prevPictureBoxCast1.Image = adjustedBitmap;
-                originalBitmap.Dispose();
-                prevPictureBoxCast1.Visible = true;
-            }
-            else
-            {
-                prevPictureBoxCast1.Visible = false;
-            }
-            if (pictureBoxCast2.Image != null)
-            {
-                Bitmap originalBitmap = new Bitmap(pictureBoxCast2.Image);
-                Bitmap adjustedBitmap = ChangeBrightness(originalBitmap, brightnessCast2);
-                prevPictureBoxCast2.Image?.Dispose();
-                prevPictureBoxCast2.Image = adjustedBitmap;
-                originalBitmap.Dispose();
-                prevPictureBoxCast2.Visible = true;
-            }
-            else
-            {
-                prevPictureBoxCast2.Visible = false;
-            }
-
-        }
-
-        private Bitmap ChangeBrightness(Bitmap original, float brightness)
-        {
-            Bitmap newBitmap = new Bitmap(original.Width, original.Height);
-            Graphics g = Graphics.FromImage(newBitmap);
-
-            brightness = brightness < 0 ? 0 : brightness;
-            brightness = brightness > 1 ? 1 : brightness;
-
-            for (int i = 0; i < original.Width; i++)
-            {
-                for (int j = 0; j < original.Height; j++)
-                {
-                    Color originalColor = original.GetPixel(i, j);
-                    int red = (int)(originalColor.R * brightness);
-                    int green = (int)(originalColor.G * brightness);
-                    int blue = (int)(originalColor.B * brightness);
-                    Color newColor = Color.FromArgb(originalColor.A, red, green, blue);
-                    newBitmap.SetPixel(i, j, newColor);
-                }
-            }
-
-            g.Dispose();
-            return newBitmap;
-        }
-
         private void panelPreview_SizeChanged(object sender, EventArgs e)
         {
             if (cancelTokenSource != null)
             {
                 cancelTokenSource.Cancel();
             }
-            PositionVariableControls();
             doUpdatePreview();
         }
 
@@ -919,6 +933,7 @@ namespace ClipboardToolForBakin2
                 comboBoxSpeechBubble.Enabled = false;
             }
         }
+
         private void buttonApply_Click(object sender, EventArgs e)
         {
             if (cancelTokenSource != null)

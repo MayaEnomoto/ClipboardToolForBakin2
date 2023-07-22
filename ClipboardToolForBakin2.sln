@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClipboardToolForBakin2", "ClipboardToolForBakin\ClipboardToolForBakin2.csproj", "{E4C7C6AD-DDD7-4234-89C9-1AD248C7BFB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsImageProcessingLibrary", "AsImageProcessingLibrary\AsImageProcessingLibrary.csproj", "{0DDD9FD1-5DA4-477E-BDCF-5FD2FD7E6AE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{E4C7C6AD-DDD7-4234-89C9-1AD248C7BFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4C7C6AD-DDD7-4234-89C9-1AD248C7BFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4C7C6AD-DDD7-4234-89C9-1AD248C7BFB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DDD9FD1-5DA4-477E-BDCF-5FD2FD7E6AE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DDD9FD1-5DA4-477E-BDCF-5FD2FD7E6AE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DDD9FD1-5DA4-477E-BDCF-5FD2FD7E6AE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DDD9FD1-5DA4-477E-BDCF-5FD2FD7E6AE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

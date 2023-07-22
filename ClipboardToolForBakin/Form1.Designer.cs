@@ -187,7 +187,7 @@
             // 
             previewEditorToolStripMenuItem.Name = "previewEditorToolStripMenuItem";
             previewEditorToolStripMenuItem.ShortcutKeys = Keys.F11;
-            previewEditorToolStripMenuItem.Size = new Size(180, 22);
+            previewEditorToolStripMenuItem.Size = new Size(174, 22);
             previewEditorToolStripMenuItem.Text = "Preview Editor";
             previewEditorToolStripMenuItem.Click += buttonPreviewEditor_Click;
             // 

@@ -10,9 +10,6 @@ namespace ClipboardToolForBakin2
 {
     public class CustomRichTextBox : RichTextBox
     {
-        bool isSmallSize = false;
-        Stack<string> smallSizeText = new Stack<string>();
-
         public CustomRichTextBox()
         {
             this.ForeColor = Color.Black;
@@ -31,7 +28,7 @@ namespace ClipboardToolForBakin2
             }
         }
 
-        public async Task StreamText(string text, int delay, bool autoScroll, CancellationToken cancelToken, CancellationToken skipToken, string instantText = null)
+        public async Task StreamText(string text, int delay, bool autoScroll, CancellationToken cancelToken, CancellationToken skipToken, string instantText = "")
         {
             DateTime lastScrollTime = DateTime.Now;
             float currentSize = this.Font.Size;

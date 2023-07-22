@@ -16,8 +16,8 @@ namespace ClipboardToolForBakin2
     {
         private List<ResourceItem> _comboBoxItems;
 
-        public string OldValue { get; private set; }
-        public string NewValue { get; private set; }
+        public string OldValue { get; private set; } = string.Empty;
+        public string NewValue { get; private set; } = string.Empty;
 
         public FormReplaceUUID(List<ResourceItem> comboBoxItems)
         {
@@ -189,7 +189,7 @@ namespace ClipboardToolForBakin2
         private string ProcessDataForPaste1()
         {
             var data = BakinPanelData.GetClipBoardData();
-            if (!data.Any()) return null;
+            if (!data.Any()) return String.Empty;
             var firstData = data.First();
 
             return firstData.Cast1;
@@ -198,7 +198,7 @@ namespace ClipboardToolForBakin2
         private string ProcessDataForPaste2()
         {
             var data = BakinPanelData.GetClipBoardData();
-            if (!data.Any()) return null;
+            if (!data.Any()) return String.Empty;
             var firstData = data.First();
             return firstData.Cast2;
         }

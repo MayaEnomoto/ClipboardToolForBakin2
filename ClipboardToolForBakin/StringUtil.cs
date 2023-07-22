@@ -6,13 +6,13 @@ namespace ClipboardToolForBakin2
     {
         public class StringData
         {
-            public string NPL;
-            public string NPC;
-            public string NPR;
-            public int Blspd;
-            public int Blrate;
-            public float Lipspd;
-            public string text;
+            public string NPL { get; set; } = string.Empty;
+            public string NPC { get; set; } = string.Empty;
+            public string NPR { get; set; } = string.Empty;
+            public int Blspd { get; set; } = 0;
+            public int Blrate { get; set; } = 0;
+            public float Lipspd { get; set; } = 0.0f;
+            public string text { get; set; } = string.Empty;
         }
 
         private static void CheckMatchAndUpdateData(string pattern, ref string input, StringData data)

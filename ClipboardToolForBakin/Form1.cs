@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -24,14 +25,22 @@ namespace ClipboardToolForBakin
         private int rowIndexFromMouseDown;
         private int rowIndexOfItemUnderMouseToDrop;
         private System.Windows.Forms.Timer clipboardCheckTimer;
-        private FormPreviewEditor _FormPreviewEditor = null;
+        private FormPreviewEditor? _FormPreviewEditor;
         private List<ResourceItem> _comboBoxItems = new List<ResourceItem>();
         private List<ShortcutKeyBinding> _shortcutKeyBindings = new List<ShortcutKeyBinding>();
+        private bool _uUIDDefinitionUpdated = false;
 
         public MainForm()
         {
             InitializeComponent();
-            InitializeDataGrid();
+
+            _dataList = new BindingList<BakinPanelData.RowData>();
+            _bindingSource = new BindingSource { DataSource = _dataList };
+            int newDefaultRowHeight = 40;
+            dataGridView.RowTemplate.Height = newDefaultRowHeight;
+            dataGridView.DataSource = _bindingSource;
+            InitializeDataGridSetting();
+
             foreach (DataGridViewColumn column in dataGridView.Columns)
             {
                 if (column.Name != "Tag" && column.Name != "Text" && column.Name != "Memo")
@@ -43,7 +52,9 @@ namespace ClipboardToolForBakin
             buttonPasteFromClipboard.Enabled = Clipboard.ContainsData("Yukar2ScriptCommands");
             clipboardCheckTimer = new System.Windows.Forms.Timer();
             clipboardCheckTimer.Interval = 500;
+#nullable disable
             clipboardCheckTimer.Tick += CheckClipboard;
+#nullable restore
             clipboardCheckTimer.Start();
             buttonPreviewEditor.Enabled = false;
             buttonDeleteRows.Enabled = false;
@@ -62,17 +73,6 @@ namespace ClipboardToolForBakin
             toolTip1.SetToolTip(buttonDeleteRows, "Ctrl+Sfhit+D");
             toolTip1.SetToolTip(buttonCopyToClipboard, "Ctrl+Sfhit+C");
             toolTip1.SetToolTip(buttonPasteFromClipboard, "Ctrl+Sfhit+V");
-        }
-
-        private void InitializeDataGrid()
-        {
-            int newDefaultRowHeight = 40;
-            dataGridView.RowTemplate.Height = newDefaultRowHeight;
-
-            _dataList = new BindingList<BakinPanelData.RowData>();
-            _bindingSource = new BindingSource { DataSource = _dataList };
-            dataGridView.DataSource = _bindingSource;
-            InitializeDataGridSetting();
         }
 
         private void InitializeDataGridSetting()
@@ -220,9 +220,13 @@ namespace ClipboardToolForBakin
 
         public class TagConverter : DefaultTypeConverter
         {
-            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+            public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
             {
                 string[] validTags = { "Talk", "Message", "Notes" };
+                if (string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
+                {
+                    return "Notes";
+                }
                 if (!validTags.Contains(text.Trim(), StringComparer.InvariantCultureIgnoreCase))
                 {
                     return "Notes";
@@ -233,8 +237,12 @@ namespace ClipboardToolForBakin
 
         public class CastValueConverter : DefaultTypeConverter
         {
-            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+            public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
             {
+                if (string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
+                {
+                    return "00000000-00000000-00000000-00000000";
+                }
                 if (!IsValidHEXFormat(text))
                 {
                     return "00000000-00000000-00000000-00000000";
@@ -245,8 +253,12 @@ namespace ClipboardToolForBakin
 
         public class ActCastValueConverter : DefaultTypeConverter
         {
-            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+            public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
             {
+                if (string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
+                {
+                    return "----";
+                }
                 if (!IsInRangeASCII(text))
                 {
                     return "----";
@@ -257,9 +269,9 @@ namespace ClipboardToolForBakin
 
         public class BoolToStringConverter : DefaultTypeConverter
         {
-            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+            public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
             {
-                if (string.IsNullOrWhiteSpace(text))
+                if (string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
                 {
                     return false;
                 }
@@ -287,7 +299,7 @@ namespace ClipboardToolForBakin
             }))
             {
                 csv.Context.RegisterClassMap<CsvRowDataMap>();
-                List<BakinPanelData.RowData> records = null;
+                List<BakinPanelData.RowData> records = new List<BakinPanelData.RowData>();
                 try
                 {
                     records = csv.GetRecords<BakinPanelData.RowData>().ToList();
@@ -341,7 +353,7 @@ namespace ClipboardToolForBakin
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error opening file: " + ex.Message);
-                    _currentFilePath = "";
+                    _currentFilePath = String.Empty;
                 }
                 UpdateWindowTitle();
             }
@@ -436,7 +448,7 @@ namespace ClipboardToolForBakin
             if (e.ColumnIndex == dataGridView.Columns["ActCast1"].Index ||
                 e.ColumnIndex == dataGridView.Columns["ActCast2"].Index)
             {
-                string input = e.FormattedValue.ToString();
+                string input = e.FormattedValue?.ToString() ?? string.Empty;
                 if (!IsInRangeASCII(input))
                 {
                     e.Cancel = true;
@@ -483,7 +495,7 @@ namespace ClipboardToolForBakin
             }
             if (e.ColumnIndex == dataGridView.Columns["Text"].Index)
             {
-                string cellValue = dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                string cellValue = dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() ?? string.Empty;
                 if (!string.IsNullOrEmpty(cellValue))
                 {
                     string tempReplacement = "<__TEMP_NEWLINE__>";
@@ -569,7 +581,7 @@ namespace ClipboardToolForBakin
 
         private void OpenFormBWithSelectedRowData()
         {
-            DataGridViewRow selectedRow = null;
+            DataGridViewRow? selectedRow = null;
 
             if (dataGridView.SelectedRows.Count >= 1)
             {
@@ -614,28 +626,30 @@ namespace ClipboardToolForBakin
                 if (_FormPreviewEditor == null || _FormPreviewEditor.IsDisposed)
                 {
                     _FormPreviewEditor = new FormPreviewEditor(rowData, _comboBoxItems, _shortcutKeyBindings);
+#nullable disable
                     _FormPreviewEditor.DataChanged += FormPreviewEditor_DataChanged;
+#nullable restore
                     _FormPreviewEditor.RowChangeRequested += FormPreviewEditor_RowChangeRequested;
                     _FormPreviewEditor.RowSwapRequested += FormPreviewEditor_RowSwapRequested;
                     _FormPreviewEditor.RowAddRequested += FormPreviewEditor_RowAddRequested;
                     _FormPreviewEditor.CSVSaveRequested += FormPreviewEditor_CSVSaveRequested;
+                    _uUIDDefinitionUpdated = false;
                 }
                 else
                 {
                     _FormPreviewEditor.UpdateSelectedData(rowData);
-                    _FormPreviewEditor.UpdateComboBoxItems(_comboBoxItems);
+                    if (_uUIDDefinitionUpdated)
+                    {
+                        _FormPreviewEditor.UpdateComboBoxItems(_comboBoxItems);
+                        _uUIDDefinitionUpdated = false;
+                    }
                     _FormPreviewEditor.PopulateFieldsWithData();
                     _FormPreviewEditor.UpdateToolTipKeys();
                 }
 
                 if (!_FormPreviewEditor.Visible)
                 {
-                    //_FormPreviewEditor.Show();
                     _FormPreviewEditor.ShowDialog(this);
-                }
-                else
-                {
-                    _FormPreviewEditor.BringToFront();
                 }
             }
         }
@@ -994,6 +1008,7 @@ namespace ClipboardToolForBakin
             if (configForm.ShowDialog() == DialogResult.OK)
             {
                 _comboBoxItems = configForm.GetItems();
+                _uUIDDefinitionUpdated = true;
             }
         }
 
@@ -1049,7 +1064,7 @@ namespace ClipboardToolForBakin
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error saving file: " + ex.Message);
-                    _currentFilePath = "";
+                    _currentFilePath = String.Empty;
                 }
                 UpdateWindowTitle();
             }
@@ -1077,7 +1092,7 @@ namespace ClipboardToolForBakin
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error saving file: " + ex.Message);
-                    _currentFilePath = "";
+                    _currentFilePath = String.Empty;
                 }
                 UpdateWindowTitle();
             }
@@ -1107,9 +1122,7 @@ namespace ClipboardToolForBakin
             {
                 string oldValue = formChangeValue.OldValue;
                 string newValue = formChangeValue.NewValue;
-
                 int replaceCount = 0;
-
                 foreach (DataGridViewRow row in dataGridView.Rows)
                 {
                     foreach (string columnName in new[] { "Cast1", "Cast2", "SpeechBubble" })
@@ -1122,7 +1135,7 @@ namespace ClipboardToolForBakin
                         }
                     }
                 }
-
+                _uUIDDefinitionUpdated = true;
                 dataGridView.Refresh();
                 MessageBox.Show($"{replaceCount} times replaced.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1149,7 +1162,7 @@ namespace ClipboardToolForBakin
             {
                 _dataList.Clear();
                 _bindingSource.ResetBindings(false);
-                _currentFilePath = null;
+                _currentFilePath = String.Empty;
                 UpdateWindowTitle();
             }
         }

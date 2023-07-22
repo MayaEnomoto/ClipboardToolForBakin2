@@ -142,11 +142,15 @@ namespace ClipboardToolForBakin2
                 {
                     using (OpenFileDialog openFileDialog = new OpenFileDialog())
                     {
-                        openFileDialog.Filter = "PNG files (*.png)|*.png";
-                        if (openFileDialog.ShowDialog() == DialogResult.OK)
+                        try
                         {
-                            filePathBox.Text = openFileDialog.FileName;
                             pictureBox.Image = new Bitmap(openFileDialog.FileName);
+                            filePathBox.Text = openFileDialog.FileName;
+                        }
+                        catch (Exception)
+                        {
+                            filePathBox.Text = string.Empty;
+                            MessageBox.Show("Error opening the image file. Please select a valid PNG file.");
                         }
                     }
                 };
@@ -156,6 +160,7 @@ namespace ClipboardToolForBakin2
 
         private void PopulateFieldsWithExistingItems()
         {
+            bool isImagePathError = false;
             for (int i = 0; i < NumberOfItems; i++)
             {
                 var keyBox = Controls.Find($"keyBox{i}", true).FirstOrDefault() as TextBox;
@@ -184,21 +189,39 @@ namespace ClipboardToolForBakin2
 
                 if (pictureBox != null && !string.IsNullOrEmpty(imagePath))
                 {
-                    pictureBox.Image = new Bitmap(imagePath);
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        pictureBox.Image = new Bitmap(imagePath);
+                    }
+                    else
+                    {
+                        pictureBox.Image = null;
+                        isImagePathError = true;
+                    }
                 }
-                else
+                else if (pictureBox != null)
                 {
                     pictureBox.Image = null;
                 }
 
-                if (i == 0 || i == 1)
+                if (keyBox != null && valueBox != null && filePathBox != null)
                 {
-                    keyBox.Enabled = false;
-                    valueBox.Enabled = false;
-                    filePathBox.Enabled = false;
-                    var browseButton = Controls.Find($"browseButton{i}", true).FirstOrDefault() as Button;
-                    browseButton.Enabled = false;
+                    if (i == 0 || i == 1)
+                    {
+                        keyBox.Enabled = false;
+                        valueBox.Enabled = false;
+                        filePathBox.Enabled = false;
+                        var browseButton = Controls.Find($"browseButton{i}", true).FirstOrDefault() as Button;
+                        if (browseButton != null)
+                        {
+                            browseButton.Enabled = false;
+                        }
+                    }
                 }
+            }
+            if (isImagePathError == true)
+            {
+                MessageBox.Show($"Failed to load image file.\r\nPlease correct the file path or delete the file path.");
             }
         }
 
@@ -277,7 +300,7 @@ namespace ClipboardToolForBakin2
         private string ProcessDataForPaste1()
         {
             var data = BakinPanelData.GetClipBoardData();
-            if (!data.Any()) return null;
+            if (!data.Any()) return String.Empty;
             var firstData = data.First();
 
             return firstData.Cast1;
@@ -286,7 +309,7 @@ namespace ClipboardToolForBakin2
         private string ProcessDataForPaste2()
         {
             var data = BakinPanelData.GetClipBoardData();
-            if (!data.Any()) return null;
+            if (!data.Any()) return String.Empty;
             var firstData = data.First();
             return firstData.Cast2;
         }
@@ -306,12 +329,12 @@ namespace ClipboardToolForBakin2
             try
             {
                 var jsonString = File.ReadAllText(filePath);
-                return JsonSerializer.Deserialize<List<ResourceItem>>(jsonString);
+                return JsonSerializer.Deserialize<List<ResourceItem>>(jsonString) ?? new List<ResourceItem>();
             }
             catch (JsonException ex)
             {
                 MessageBox.Show($"An error occurred while loading the file: {ex.Message}", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
+                return new List<ResourceItem>();
             }
         }
 

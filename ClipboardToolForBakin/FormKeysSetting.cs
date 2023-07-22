@@ -8,8 +8,8 @@ namespace ClipboardToolForBakin2
 
         public class ShortcutKeyBinding
         {
-            public string FunctionName { get; set; }
-            public string ShortcutKey { get; set; }
+            public string FunctionName { get; set; } = string.Empty;
+            public string ShortcutKey { get; set; } = string.Empty;
         }
 
         private List<ShortcutKeyBinding> _shortcutKeyBindings;
@@ -44,9 +44,11 @@ namespace ClipboardToolForBakin2
                     ReadOnly = true,
                     Margin = new Padding(10)
                 };
+#nullable disable
                 textBox.KeyDown += textBox_KeyDown;
                 textBox.Leave += textBox_Leave;
                 textBox.TextChanged += textBox_TextChanged;
+#nullable restore
                 innerPanel.Controls.Add(textBox);
 
                 var clearButton = new Button
@@ -55,7 +57,9 @@ namespace ClipboardToolForBakin2
                     AutoSize = true,
                     Margin = new Padding(10)
                 };
+#nullable disable
                 clearButton.Click += ClearButton_Click;
+#nullable restore
                 innerPanel.Controls.Add(clearButton);
             }
         }

@@ -43,7 +43,15 @@ namespace ClipboardToolForBakin2
             if (File.Exists(filePath))
             {
                 var jsonString = File.ReadAllText(filePath);
-                shortcutKeyBindings = JsonSerializer.Deserialize<List<FormKeysSetting.ShortcutKeyBinding>>(jsonString);
+                var result = JsonSerializer.Deserialize<List<FormKeysSetting.ShortcutKeyBinding>>(jsonString);
+                if (result != null)
+                {
+                    shortcutKeyBindings = result;
+                }
+                else
+                {
+                    InitKeyBindings(shortcutKeyBindings);
+                }
             }
             else
             {

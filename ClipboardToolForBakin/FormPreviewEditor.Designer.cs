@@ -68,18 +68,8 @@
             radioButtonTalkCast1 = new RadioButton();
             radioButtonTalkCast2 = new RadioButton();
             checkBoxWindowHidden = new CheckBox();
-            pictureBoxCast1 = new PictureBox();
-            pictureBoxCast2 = new PictureBox();
             panelPreview = new Panel();
-            prevTableLayoutPanelBubble = new TableLayoutPanel();
-            prevPictureBoxEvent = new PictureBox();
-            prevPictureBoxPc4 = new PictureBox();
-            prevPictureBoxPc3 = new PictureBox();
-            prevPictureBoxPc2 = new PictureBox();
-            prevPictureBoxPc1 = new PictureBox();
             prevTextBoxNPLCR = new TextBox();
-            prevPictureBoxCast1 = new PictureBox();
-            prevPictureBoxCast2 = new PictureBox();
             buttonReload = new Button();
             contextMenuStripInputHelper = new ContextMenuStrip(components);
             buttonStreamSkip = new Button();
@@ -92,20 +82,12 @@
             buttonMoveDown = new Button();
             buttonMoveUp = new Button();
             buttonShortcutKeysSetting = new Button();
+            panelCast2 = new Panel();
+            panelCast1 = new Panel();
             ((System.ComponentModel.ISupportInitialize)numericUpDownBlspd).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownBlrate).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownLipspd).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxCast1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxCast2).BeginInit();
             panelPreview.SuspendLayout();
-            prevTableLayoutPanelBubble.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxEvent).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxPc4).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxPc3).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxPc2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxPc1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxCast1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxCast2).BeginInit();
             SuspendLayout();
             // 
             // buttonPreviousRow
@@ -319,7 +301,7 @@
             comboBoxCast1.Name = "comboBoxCast1";
             comboBoxCast1.Size = new Size(115, 23);
             comboBoxCast1.TabIndex = 8;
-            comboBoxCast1.SelectedIndexChanged += comboBoxCast1_SelectedIndexChanged_1;
+            comboBoxCast1.SelectedIndexChanged += comboBoxCast1_SelectedIndexChanged;
             // 
             // labelCast1
             // 
@@ -355,7 +337,7 @@
             comboBoxCast2.Name = "comboBoxCast2";
             comboBoxCast2.Size = new Size(115, 23);
             comboBoxCast2.TabIndex = 10;
-            comboBoxCast2.SelectedIndexChanged += comboBoxCast2_SelectedIndexChanged_1;
+            comboBoxCast2.SelectedIndexChanged += comboBoxCast2_SelectedIndexChanged;
             // 
             // labelCast2
             // 
@@ -499,126 +481,17 @@
             checkBoxWindowHidden.Text = "Window Hidden";
             checkBoxWindowHidden.UseVisualStyleBackColor = true;
             // 
-            // pictureBoxCast1
-            // 
-            pictureBoxCast1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pictureBoxCast1.BorderStyle = BorderStyle.Fixed3D;
-            pictureBoxCast1.Location = new Point(576, 256);
-            pictureBoxCast1.Name = "pictureBoxCast1";
-            pictureBoxCast1.Size = new Size(52, 52);
-            pictureBoxCast1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBoxCast1.TabIndex = 42;
-            pictureBoxCast1.TabStop = false;
-            // 
-            // pictureBoxCast2
-            // 
-            pictureBoxCast2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pictureBoxCast2.BorderStyle = BorderStyle.Fixed3D;
-            pictureBoxCast2.Location = new Point(757, 256);
-            pictureBoxCast2.Name = "pictureBoxCast2";
-            pictureBoxCast2.Size = new Size(52, 52);
-            pictureBoxCast2.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBoxCast2.TabIndex = 43;
-            pictureBoxCast2.TabStop = false;
-            // 
             // panelPreview
             // 
             panelPreview.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panelPreview.BackColor = SystemColors.GradientInactiveCaption;
             panelPreview.BorderStyle = BorderStyle.FixedSingle;
-            panelPreview.Controls.Add(prevTableLayoutPanelBubble);
             panelPreview.Controls.Add(prevTextBoxNPLCR);
-            panelPreview.Controls.Add(prevPictureBoxCast1);
-            panelPreview.Controls.Add(prevPictureBoxCast2);
             panelPreview.Location = new Point(12, 12);
             panelPreview.Name = "panelPreview";
             panelPreview.Size = new Size(558, 314);
             panelPreview.TabIndex = 44;
             panelPreview.SizeChanged += panelPreview_SizeChanged;
-            // 
-            // prevTableLayoutPanelBubble
-            // 
-            prevTableLayoutPanelBubble.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            prevTableLayoutPanelBubble.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            prevTableLayoutPanelBubble.BackColor = Color.Transparent;
-            prevTableLayoutPanelBubble.ColumnCount = 5;
-            prevTableLayoutPanelBubble.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            prevTableLayoutPanelBubble.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            prevTableLayoutPanelBubble.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            prevTableLayoutPanelBubble.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            prevTableLayoutPanelBubble.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            prevTableLayoutPanelBubble.Controls.Add(prevPictureBoxEvent, 4, 0);
-            prevTableLayoutPanelBubble.Controls.Add(prevPictureBoxPc4, 3, 0);
-            prevTableLayoutPanelBubble.Controls.Add(prevPictureBoxPc3, 2, 0);
-            prevTableLayoutPanelBubble.Controls.Add(prevPictureBoxPc2, 1, 0);
-            prevTableLayoutPanelBubble.Controls.Add(prevPictureBoxPc1, 0, 0);
-            prevTableLayoutPanelBubble.Location = new Point(3, 200);
-            prevTableLayoutPanelBubble.Name = "prevTableLayoutPanelBubble";
-            prevTableLayoutPanelBubble.RowCount = 1;
-            prevTableLayoutPanelBubble.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            prevTableLayoutPanelBubble.Size = new Size(550, 109);
-            prevTableLayoutPanelBubble.TabIndex = 56;
-            // 
-            // prevPictureBoxEvent
-            // 
-            prevPictureBoxEvent.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            prevPictureBoxEvent.BackColor = Color.Transparent;
-            prevPictureBoxEvent.Image = Properties.Resources.prev_event;
-            prevPictureBoxEvent.Location = new Point(443, 3);
-            prevPictureBoxEvent.Name = "prevPictureBoxEvent";
-            prevPictureBoxEvent.Size = new Size(104, 103);
-            prevPictureBoxEvent.SizeMode = PictureBoxSizeMode.StretchImage;
-            prevPictureBoxEvent.TabIndex = 55;
-            prevPictureBoxEvent.TabStop = false;
-            // 
-            // prevPictureBoxPc4
-            // 
-            prevPictureBoxPc4.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            prevPictureBoxPc4.BackColor = Color.Transparent;
-            prevPictureBoxPc4.Image = Properties.Resources.prev_pc04;
-            prevPictureBoxPc4.Location = new Point(333, 3);
-            prevPictureBoxPc4.Name = "prevPictureBoxPc4";
-            prevPictureBoxPc4.Size = new Size(104, 103);
-            prevPictureBoxPc4.SizeMode = PictureBoxSizeMode.StretchImage;
-            prevPictureBoxPc4.TabIndex = 54;
-            prevPictureBoxPc4.TabStop = false;
-            // 
-            // prevPictureBoxPc3
-            // 
-            prevPictureBoxPc3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            prevPictureBoxPc3.BackColor = Color.Transparent;
-            prevPictureBoxPc3.ErrorImage = Properties.Resources.prev_pc03;
-            prevPictureBoxPc3.Image = Properties.Resources.prev_pc03;
-            prevPictureBoxPc3.Location = new Point(223, 3);
-            prevPictureBoxPc3.Name = "prevPictureBoxPc3";
-            prevPictureBoxPc3.Size = new Size(104, 103);
-            prevPictureBoxPc3.SizeMode = PictureBoxSizeMode.StretchImage;
-            prevPictureBoxPc3.TabIndex = 53;
-            prevPictureBoxPc3.TabStop = false;
-            // 
-            // prevPictureBoxPc2
-            // 
-            prevPictureBoxPc2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            prevPictureBoxPc2.BackColor = Color.Transparent;
-            prevPictureBoxPc2.Image = Properties.Resources.prev_pc02;
-            prevPictureBoxPc2.Location = new Point(113, 3);
-            prevPictureBoxPc2.Name = "prevPictureBoxPc2";
-            prevPictureBoxPc2.Size = new Size(104, 103);
-            prevPictureBoxPc2.SizeMode = PictureBoxSizeMode.StretchImage;
-            prevPictureBoxPc2.TabIndex = 52;
-            prevPictureBoxPc2.TabStop = false;
-            // 
-            // prevPictureBoxPc1
-            // 
-            prevPictureBoxPc1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            prevPictureBoxPc1.BackColor = Color.Transparent;
-            prevPictureBoxPc1.Image = Properties.Resources.prev_pc01;
-            prevPictureBoxPc1.Location = new Point(3, 3);
-            prevPictureBoxPc1.Name = "prevPictureBoxPc1";
-            prevPictureBoxPc1.Size = new Size(104, 103);
-            prevPictureBoxPc1.SizeMode = PictureBoxSizeMode.StretchImage;
-            prevPictureBoxPc1.TabIndex = 51;
-            prevPictureBoxPc1.TabStop = false;
             // 
             // prevTextBoxNPLCR
             // 
@@ -630,30 +503,6 @@
             prevTextBoxNPLCR.Size = new Size(108, 23);
             prevTextBoxNPLCR.TabIndex = 46;
             prevTextBoxNPLCR.TabStop = false;
-            // 
-            // prevPictureBoxCast1
-            // 
-            prevPictureBoxCast1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            prevPictureBoxCast1.BackColor = SystemColors.GradientInactiveCaption;
-            prevPictureBoxCast1.Image = Properties.Resources.prev_dumy;
-            prevPictureBoxCast1.Location = new Point(3, 75);
-            prevPictureBoxCast1.Name = "prevPictureBoxCast1";
-            prevPictureBoxCast1.Size = new Size(223, 234);
-            prevPictureBoxCast1.SizeMode = PictureBoxSizeMode.StretchImage;
-            prevPictureBoxCast1.TabIndex = 46;
-            prevPictureBoxCast1.TabStop = false;
-            // 
-            // prevPictureBoxCast2
-            // 
-            prevPictureBoxCast2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            prevPictureBoxCast2.BackColor = SystemColors.GradientInactiveCaption;
-            prevPictureBoxCast2.Image = Properties.Resources.prev_dumy2;
-            prevPictureBoxCast2.Location = new Point(329, 75);
-            prevPictureBoxCast2.Name = "prevPictureBoxCast2";
-            prevPictureBoxCast2.Size = new Size(224, 234);
-            prevPictureBoxCast2.SizeMode = PictureBoxSizeMode.StretchImage;
-            prevPictureBoxCast2.TabIndex = 47;
-            prevPictureBoxCast2.TabStop = false;
             // 
             // buttonReload
             // 
@@ -776,6 +625,7 @@
             // 
             // buttonShortcutKeysSetting
             // 
+            buttonShortcutKeysSetting.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             buttonShortcutKeysSetting.Location = new Point(902, 12);
             buttonShortcutKeysSetting.Name = "buttonShortcutKeysSetting";
             buttonShortcutKeysSetting.Size = new Size(30, 30);
@@ -784,11 +634,31 @@
             buttonShortcutKeysSetting.UseVisualStyleBackColor = true;
             buttonShortcutKeysSetting.Click += buttonShortcutKeysSetting_Click;
             // 
+            // panelCast2
+            // 
+            panelCast2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            panelCast2.BorderStyle = BorderStyle.Fixed3D;
+            panelCast2.Location = new Point(759, 256);
+            panelCast2.Name = "panelCast2";
+            panelCast2.Size = new Size(52, 52);
+            panelCast2.TabIndex = 52;
+            // 
+            // panelCast1
+            // 
+            panelCast1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            panelCast1.BorderStyle = BorderStyle.Fixed3D;
+            panelCast1.Location = new Point(576, 256);
+            panelCast1.Name = "panelCast1";
+            panelCast1.Size = new Size(52, 52);
+            panelCast1.TabIndex = 51;
+            // 
             // FormPreviewEditor
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(944, 501);
+            Controls.Add(panelCast2);
+            Controls.Add(panelCast1);
             Controls.Add(buttonShortcutKeysSetting);
             Controls.Add(buttonMoveUp);
             Controls.Add(buttonMoveDown);
@@ -836,8 +706,6 @@
             Controls.Add(labelNPL);
             Controls.Add(labelTagType);
             Controls.Add(comboBoxTagType);
-            Controls.Add(pictureBoxCast1);
-            Controls.Add(pictureBoxCast2);
             Controls.Add(buttonApply);
             Controls.Add(buttonNextRow);
             Controls.Add(buttonPreviousRow);
@@ -853,18 +721,8 @@
             ((System.ComponentModel.ISupportInitialize)numericUpDownBlspd).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownBlrate).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownLipspd).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxCast1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxCast2).EndInit();
             panelPreview.ResumeLayout(false);
             panelPreview.PerformLayout();
-            prevTableLayoutPanelBubble.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxEvent).EndInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxPc4).EndInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxPc3).EndInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxPc2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxPc1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxCast1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)prevPictureBoxCast2).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -910,29 +768,21 @@
         private RadioButton radioButtonTalkCast1;
         private RadioButton radioButtonTalkCast2;
         private CheckBox checkBoxWindowHidden;
-        private PictureBox pictureBoxCast1;
-        private PictureBox pictureBoxCast2;
         private Panel panelPreview;
         private Button buttonReload;
         private ContextMenuStrip contextMenuStripInputHelper;
-        private PictureBox prevPictureBoxCast2;
-        private PictureBox prevPictureBoxCast1;
         private TextBox prevTextBoxNPLCR;
         private Button buttonStreamSkip;
         private TextBox prevTextBoxNotes;
         private TextBox prevTextBoxActCast1;
         private TextBox prevTextBoxActCast2;
-        private PictureBox prevPictureBoxEvent;
-        private PictureBox prevPictureBoxPc4;
-        private PictureBox prevPictureBoxPc3;
-        private PictureBox prevPictureBoxPc2;
-        private PictureBox prevPictureBoxPc1;
         private Button buttonPreview;
-        private TableLayoutPanel prevTableLayoutPanelBubble;
         private Button buttonDuplicateRow;
         private CheckBox checkBoxAutoScroll;
         private Button buttonMoveDown;
         private Button buttonMoveUp;
         private Button buttonShortcutKeysSetting;
+        private Panel panelCast2;
+        private Panel panelCast1;
     }
 }

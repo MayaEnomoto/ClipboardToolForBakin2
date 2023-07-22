@@ -63,9 +63,9 @@ namespace ClipboardToolForBakin2.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
-        internal static System.Drawing.Bitmap prev_dumy {
+        internal static System.Drawing.Bitmap prev_dummy {
             get {
-                object obj = ResourceManager.GetObject("prev_dumy", resourceCulture);
+                object obj = ResourceManager.GetObject("prev_dummy", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace ClipboardToolForBakin2.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
-        internal static System.Drawing.Bitmap prev_dumy2 {
+        internal static System.Drawing.Bitmap prev_dummy2 {
             get {
-                object obj = ResourceManager.GetObject("prev_dumy2", resourceCulture);
+                object obj = ResourceManager.GetObject("prev_dummy2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
