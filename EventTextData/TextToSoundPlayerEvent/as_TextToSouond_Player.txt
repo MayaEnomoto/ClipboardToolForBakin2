@@ -1,0 +1,481 @@
+Guid	bb4a0ed3-8e87-4cc7-851b-d49ae95b9022
+イベント名	as_TextToSound_Player
+シート	set
+	グラフィック	00000000-0000-0000-0000-000000000000
+	向き	-1
+	向き固定	False
+	物理	False
+	衝突判定	True
+	イベントと衝突	True
+	移動速度	0
+	移動頻度	0
+	移動タイプ	NONE
+	押せる	True
+	条件	COND_TYPE_VARIABLE
+		比較演算子	EQUAL
+		インデックス	-1
+		オプション	1
+		ローカル参照	False
+		ポインタ	-1
+		ポインタ名	
+		参照名	as_state_TextToSounds
+	条件終了
+	スクリプト
+		開始条件	PARALLEL
+		高さ無視	False
+		判定拡張	False
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_Temp
+			整数	0
+			小数	0
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+			小数	0
+			整数	0
+		コマンド終了
+		コマンド	LOOP
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			配列変数	A:Larray_TextToSound
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	2
+			配列変数	A:array_TextToSound
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_Temp
+			整数	2
+			配列変数	A:array_TextToSound
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_Tmp
+			整数	0
+			小数	10
+			整数	6
+		コマンド終了
+		コマンド	IFVARIABLE
+			ローカル変数	L_as_TextToSounds_Temp
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	BREAK
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+			小数	1
+			整数	1
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+		コマンド	ENDLOOP
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+			小数	0
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_CurrentStatus
+			整数	2
+			配列変数	A:Larray_TextToSound
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_CurrentStatus
+			整数	0
+			小数	10
+			整数	6
+		コマンド終了
+		コマンド	IFVARIABLE
+			ローカル変数	L_as_TextToSounds_CurrentStatus
+			整数	1
+			整数	0
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitKey
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	2
+			配列変数	A:Larray_TextToSound
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			小数	1000
+			整数	6
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			小数	100
+			整数	4
+		コマンド終了
+		コマンド	COMMENT
+			文字列	To avoid playback time discrepancies, the Wait time should be slightly shorter than the actual Wait time.\n再生時間のズレが発生する為、実際のWait時間より少し短くする。
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			小数	0.9
+			整数	3
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	IFVARIABLE
+			ローカル変数	L_as_TextToSounds_CurrentStatus
+			整数	2
+			整数	0
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitKey
+			整数	0
+			整数	1
+			整数	0
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitKey
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	2
+			配列変数	A:Larray_TextToSound
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	0
+			小数	1000
+			整数	4
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	2
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	7
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			変数	N:as_state_TextToSounds
+			整数	0
+			小数	2
+			整数	0
+		コマンド終了
+	スクリプト終了
+シート終了
+シート	run
+	グラフィック	00000000-0000-0000-0000-000000000000
+	向き	-1
+	向き固定	False
+	物理	False
+	衝突判定	True
+	イベントと衝突	True
+	移動速度	0
+	移動頻度	0
+	移動タイプ	NONE
+	押せる	True
+	条件	COND_TYPE_VARIABLE
+		比較演算子	EQUAL
+		インデックス	-1
+		オプション	2
+		ローカル参照	False
+		ポインタ	-1
+		ポインタ名	
+		参照名	as_state_TextToSounds
+	条件終了
+	スクリプト
+		開始条件	PARALLEL
+		高さ無視	False
+		判定拡張	False
+		コマンド	IFVARIABLE
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	1
+			整数	1
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	0
+			整数	1
+			整数	2
+		コマンド終了
+		コマンド	PLAYSE
+			Guid	7ad60f4a-aeb7-4fe7-a161-e88b69344106
+			整数	100
+			整数	200
+			整数	0
+		コマンド終了
+		コマンド	WAIT
+			小数	0
+			整数	1
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	IFVARIABLE
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			整数	4
+		コマンド終了
+		コマンド	WAIT
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	1
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	IFVARIABLE
+			ローカル変数	L_as_TextToSounds_WaitKey
+			整数	0
+			整数	4
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			変数	N:as_state_KeyOK
+			整数	12
+			整数	4
+			整数	0
+		コマンド終了
+		コマンド	IFVARIABLE
+			変数	N:as_state_KeyOK
+			整数	0
+			整数	3
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			変数	N:as_state_KeyOK
+			整数	0
+			小数	0
+			整数	0
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitKey
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	WAIT
+			小数	0
+			整数	1
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	IFVARIABLE
+			ローカル変数	L_as_TextToSounds_CurrentStatus
+			整数	0
+			整数	3
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+			整数	1
+			整数	1
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_CurrentStatus
+			整数	2
+			配列変数	A:Larray_TextToSound
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_CurrentStatus
+			整数	0
+			小数	10
+			整数	6
+		コマンド終了
+		コマンド	IFVARIABLE
+			ローカル変数	L_as_TextToSounds_CurrentStatus
+			整数	1
+			整数	0
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitKey
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	2
+			配列変数	A:Larray_TextToSound
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			小数	1000
+			整数	6
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			小数	100
+			整数	4
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			小数	0.9
+			整数	3
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	IFVARIABLE
+			ローカル変数	L_as_TextToSounds_CurrentStatus
+			整数	2
+			整数	0
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitKey
+			整数	0
+			整数	1
+			整数	0
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitKey
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_WaitCnt
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	2
+			配列変数	A:Larray_TextToSound
+			ローカル変数	L_as_TextToSounds_CurrentLine
+			整数	0
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	0
+			小数	1000
+			整数	4
+		コマンド終了
+		コマンド	HLVARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	2
+			ローカル変数	L_as_TextToSounds_SoundCnt
+			整数	7
+		コマンド終了
+		コマンド	ELSE
+		コマンド終了
+		コマンド	VARIABLE
+			整数	0
+			ローカル変数	L_as_TextToSounds_Status
+			整数	0
+			整数	0
+			整数	0
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+		コマンド	ENDIF
+		コマンド終了
+	スクリプト終了
+シート終了

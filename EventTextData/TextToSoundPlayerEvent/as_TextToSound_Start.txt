@@ -1,0 +1,26 @@
+Guid	93b4a5bb-f1ca-4ab6-b93a-8ae304d0e7dd
+イベント名	as_TextToSound_Start
+シート	イベントシート
+	グラフィック	00000000-0000-0000-0000-000000000000
+	向き	-1
+	向き固定	False
+	物理	False
+	衝突判定	True
+	イベントと衝突	True
+	移動速度	0
+	移動頻度	0
+	移動タイプ	NONE
+	押せる	True
+	スクリプト
+		開始条件	NONE
+		高さ無視	False
+		判定拡張	False
+		コマンド	VARIABLE
+			整数	0
+			変数	N:as_state_TextToSounds
+			整数	0
+			整数	1
+			整数	0
+		コマンド終了
+	スクリプト終了
+シート終了
