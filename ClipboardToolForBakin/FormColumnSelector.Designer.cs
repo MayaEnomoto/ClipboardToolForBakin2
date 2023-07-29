@@ -100,7 +100,7 @@
             Controls.Add(ButtonConfirm);
             Controls.Add(flowLayoutPanelViewChange);
             Name = "FormColumnSelector";
-            Text = "ColumnSelectorForm";
+            Text = "View Change (Column Selector)";
             ResumeLayout(false);
         }
 

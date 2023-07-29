@@ -142,15 +142,20 @@ namespace ClipboardToolForBakin2
                 {
                     using (OpenFileDialog openFileDialog = new OpenFileDialog())
                     {
-                        try
+                        openFileDialog.Filter = "PNG files (*.png)|*.png|All files (*.*)|*.*";
+
+                        if (openFileDialog.ShowDialog() == DialogResult.OK)
                         {
-                            pictureBox.Image = new Bitmap(openFileDialog.FileName);
-                            filePathBox.Text = openFileDialog.FileName;
-                        }
-                        catch (Exception)
-                        {
-                            filePathBox.Text = string.Empty;
-                            MessageBox.Show("Error opening the image file. Please select a valid PNG file.");
+                            try
+                            {
+                                pictureBox.Image = new Bitmap(openFileDialog.FileName);
+                                filePathBox.Text = openFileDialog.FileName;
+                            }
+                            catch (Exception)
+                            {
+                                filePathBox.Text = string.Empty;
+                                MessageBox.Show("Error opening the image file. Please select a valid PNG file.");
+                            }
                         }
                     }
                 };

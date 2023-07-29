@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using ClipboardToolForBakin2;
+using CsvHelper;
+using System;
+using System.Text;
 
 namespace ClipboardToolForBakin
 {
@@ -56,6 +59,27 @@ namespace ClipboardToolForBakin
             public string Memo { get; set; }
         }
 
+        // Call common event "as_TextToSound_start" (base binary)
+        private static byte[] callCommonEventFixBytes = new byte[]
+        {
+            0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x01, 0x00, 0xf7, 0x1b, 0x88, 0xd0, 0x21,
+            0xef, 0xd8, 0x41, 0x85, 0x69, 0x31, 0x90, 0x36, 0x9a, 0x8a, 0x1a, 0x00, 0x00, 0x00, 0x00
+        };
+        private readonly static byte[] orgCommonEventFixBytes = new byte[]
+        {
+            0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x01, 0x00, 0xf7, 0x1b, 0x88, 0xd0, 0x21,
+            0xef, 0xd8, 0x41, 0x85, 0x69, 0x31, 0x90, 0x36, 0x9a, 0x8a, 0x1a, 0x00, 0x00, 0x00, 0x00
+        };
+
+        // Complex variable box operation panel. (base binary)
+        private static byte[] complexVariableFixBytes = new byte[]
+        {
+            0x46, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x07, 0x01, 0x08, 0x01, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x11, 0x61, 0x72, 0x72, 0x61, 0x79, 0x5f, 0x54, 0x65, 0x78, 0x74, 0x54, 0x6f, 0x53,
+            0x6f, 0x75, 0x6e, 0x64, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+        };
+
         public static void SetClipboardDataWithCustomFormat(IEnumerable<byte[]> formattedDataList)
         {
             var dataObject = new DataObject();
@@ -69,6 +93,12 @@ namespace ClipboardToolForBakin
 
         public static void SetClipBoard(IEnumerable<BakinPanelData.RowData> data)
         {
+            SetClipBoard(data, false);
+        }
+
+        public static void SetClipBoard(IEnumerable<BakinPanelData.RowData> data, bool enableTextToSound)
+        {
+            int TextToSoundSum = 0;
             MemoryStream memoryStream = new MemoryStream();
             using (BinaryWriter writer = new BinaryWriter(memoryStream))
             {
@@ -209,6 +239,28 @@ namespace ClipboardToolForBakin
                             }
                             writer.Write(0x00000000);
                             writer.Write(0x00000000);
+
+                            if (enableTextToSound == true)
+                            {
+                                writer.Write(callCommonEventFixBytes);
+                                TextToSoundSum++;
+                                int TextToSoundCount = 0;
+                                List<int> SoundPanel = CustomRichTextBox.GetTextCounter(rowData.Text);
+                                foreach (int intValue in SoundPanel)
+                                {
+                                    byte[] counterBytes = BitConverter.GetBytes(TextToSoundCount);
+                                    Buffer.BlockCopy(counterBytes, 0, complexVariableFixBytes, 40, counterBytes.Length);
+                                    float value = (float)intValue;
+                                    byte[] valueBytes = BitConverter.GetBytes(value);
+                                    Buffer.BlockCopy(valueBytes, 0, complexVariableFixBytes, 48, valueBytes.Length);
+                                    foreach (byte b in complexVariableFixBytes)
+                                    {
+                                        writer.Write(b);
+                                    }
+                                    TextToSoundCount++;
+                                }
+                                TextToSoundSum += TextToSoundCount;
+                            }
                             break;
 
                         case "Message":
@@ -276,6 +328,29 @@ namespace ClipboardToolForBakin
                             {
                                 writer.Write(0x00000000);
                             }
+
+                            if (enableTextToSound == true)
+                            {
+                                writer.Write(callCommonEventFixBytes);
+                                TextToSoundSum++;
+
+                                int TextToSoundCount = 0;
+                                List<int> SoundPanel = CustomRichTextBox.GetTextCounter(rowData.Text);
+                                foreach (int intValue in SoundPanel)
+                                {
+                                    byte[] counterBytes = BitConverter.GetBytes(TextToSoundCount);
+                                    Buffer.BlockCopy(counterBytes, 0, complexVariableFixBytes, 40, counterBytes.Length);
+                                    float value = (float)intValue;
+                                    byte[] valueBytes = BitConverter.GetBytes(value);
+                                    Buffer.BlockCopy(valueBytes, 0, complexVariableFixBytes, 48, valueBytes.Length);
+                                    foreach (byte b in complexVariableFixBytes)
+                                    {
+                                        writer.Write(b);
+                                    }
+                                    TextToSoundCount++;
+                                }
+                                TextToSoundSum += TextToSoundCount;
+                            }
                             break;
 
                         case "Notes":
@@ -298,6 +373,11 @@ namespace ClipboardToolForBakin
                             writer.Write(Encoding.UTF8.GetBytes(rowData.Text));
                             break;
                     }
+                }
+                if (enableTextToSound == true)
+                {
+                    writer.Seek(0, SeekOrigin.Begin);
+                    writer.Write((uint)(data.Count() + TextToSoundSum));
                 }
             }
             byte[] formattedData = memoryStream.ToArray();
@@ -406,7 +486,7 @@ namespace ClipboardToolForBakin
                                     if (cast1.Length == 0)
                                     {
                                         rowData.Cast1 = "00000000-00000000-00000000-00000000";
-                                        rowData.ActCast1 = "----";
+                                        rowData.ActCast1 = "normal";
                                         byte actCast1Length = reader.ReadByte();
                                     }
                                     else
@@ -423,7 +503,7 @@ namespace ClipboardToolForBakin
                                     if (cast2.Length == 0)
                                     {
                                         rowData.Cast2 = "00000000-00000000-00000000-00000000";
-                                        rowData.ActCast2 = "----";
+                                        rowData.ActCast2 = "normal";
                                         byte actCast1Length = reader.ReadByte();
                                     }
                                     else
@@ -506,6 +586,89 @@ namespace ClipboardToolForBakin
                 }
             }
             return new byte[0];
+        }
+
+        public static bool IsCommonEventCallDataOnEventPanel()
+        {
+            byte[] clipboardData = GetClipboardDataWithCustomFormat();
+            using (MemoryStream memoryStream = new MemoryStream(clipboardData))
+            {
+                using (BinaryReader reader = new BinaryReader(memoryStream))
+                {
+                    uint count = reader.ReadUInt32();
+                    uint zero = reader.ReadUInt32();
+                    if (count == 1)
+                    {
+                        uint tagId = reader.ReadUInt32();
+                        if (tagId == 0x00000005)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static void UpdateCallCommonEvent()
+        {
+            byte[] clipboardData = GetClipboardDataWithCustomFormat();
+            using (MemoryStream memoryStream = new MemoryStream(clipboardData))
+            {
+                using (BinaryReader reader = new BinaryReader(memoryStream))
+                {
+                    uint count = reader.ReadUInt32();
+                    uint zero = reader.ReadUInt32();
+                    if (count == 1)
+                    {
+                        uint tagId = reader.ReadUInt32();
+                        if (tagId == 0x00000005)
+                        {
+                            reader.ReadUInt32();
+                            reader.ReadByte();  // 0x02
+                            reader.ReadByte();  // 0x01
+                            reader.ReadByte();  // 0x00
+                            byte[] eventUUID = reader.ReadBytes(16);
+                            int overwritePosition = 11;
+                            Array.Copy(eventUUID, 0, callCommonEventFixBytes, overwritePosition, eventUUID.Length);
+                            return;
+                        }
+                    }
+                }
+            }
+            throw new ArgumentException("Copy failed. The data on the clipboard is not what was intended.");
+        }
+
+        public static void UpdateCallCommonEvent(string uuid)
+        {
+            if (uuid.Length != 32)
+            {
+                throw new ArgumentException("UUID must be exactly 16 characters long.", nameof(uuid));
+            }
+            byte[] eventUUID = HexStringToBinary(uuid);
+            int overwritePosition = 11;
+            Array.Copy(eventUUID, 0, callCommonEventFixBytes, overwritePosition, eventUUID.Length);
+        }
+
+        public static string GetCurrentUUID()
+        {
+            byte[] eventUUID = new byte[16];
+            int startIndex = 11;
+            Array.Copy(callCommonEventFixBytes, startIndex, eventUUID, 0, eventUUID.Length);
+            string uuid = BinaryToFormattedHexString(eventUUID);
+            return uuid;
+        }
+
+        public static bool isUpdatedCommonEventUUID()
+        {
+            for (int i = 0; i < callCommonEventFixBytes.Length; i++)
+            {
+                if (callCommonEventFixBytes[i] != orgCommonEventFixBytes[i])
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static string BinaryToHexString(byte[] data)

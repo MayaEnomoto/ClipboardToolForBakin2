@@ -516,6 +516,10 @@ namespace ClipboardToolForBakin2
         private void comboBoxCast1_SelectedIndexChanged(object sender, EventArgs e)
         {
             updatePictureBoxCast1();
+            if (String.IsNullOrEmpty(textBoxActCast1.Text) || String.IsNullOrWhiteSpace(textBoxActCast1.Text))
+            {
+                textBoxActCast1.Text = "normal";
+            }
         }
 
         private void updatePictureBoxCast1()
@@ -555,6 +559,10 @@ namespace ClipboardToolForBakin2
         private void comboBoxCast2_SelectedIndexChanged(object sender, EventArgs e)
         {
             updatePictureBoxCast2();
+            if (String.IsNullOrEmpty(textBoxActCast2.Text) || String.IsNullOrWhiteSpace(textBoxActCast2.Text))
+            {
+                textBoxActCast2.Text = "normal";
+            }
         }
 
         private void updatePictureBoxCast2()
